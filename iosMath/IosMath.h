@@ -12,3 +12,4 @@
 #import <IosMath/MTMathListDisplay.h>
 #import <IosMath/MTMathList.h>
 #import <IosMath/MTMathListBuilder.h>
+#import <IosMath/MTAsciiMathListBuilder.h>

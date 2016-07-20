@@ -85,6 +85,8 @@ typedef NS_ENUM(unsigned int, MTTextAlignment) {
  @see error */
 @property (nonatomic, nullable) NSString* latex;
 
+@property (nonatomic, nullable) NSString* asciiMath;
+
 /** This contains any error that occurred when parsing the latex. */
 @property (nonatomic, readonly, nullable) NSError* error;
 

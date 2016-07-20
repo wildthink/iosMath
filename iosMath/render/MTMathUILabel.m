@@ -13,6 +13,7 @@
 #import "MTMathListDisplay.h"
 #import "MTFontManager.h"
 #import "MTMathListBuilder.h"
+//#import "MTAsciiMathListBuilder.h"
 #import "MTTypesetter.h"
 
 @implementation MTMathUILabel {
@@ -99,6 +100,23 @@
     }
     [self setNeedsLayout];
 }
+
+//- (void)setAsciiMath:(NSString *)asciiMath {
+//    _asciiMath = asciiMath;
+//    _error = nil;
+//    NSError* error = nil;
+//    _mathList = [MTAsciiMathListBuilder buildFromAsciiMathString:asciiMath error:&error];
+//    if (error) {
+//        _mathList = nil;
+//        _error = error;
+//        NSLog(@"Error parsing latex: %@", error.localizedDescription);
+//        _errorLabel.text = error.localizedDescription;
+//        _errorLabel.frame = self.bounds;
+//        _errorLabel.hidden = !self.displayErrorInline;
+//        _errorLabel.textColor = [UIColor redColor];
+//    }
+//    [self setNeedsLayout];
+//}
 
 - (void)setLabelMode:(MTMathUILabelMode)labelMode
 {
