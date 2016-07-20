@@ -7,10 +7,9 @@
 //
 // https://github.com/mathjax/MathJax/blob/master/unpacked/jax/input/AsciiMath/jax.js
 
+//#import "MTMathListBuilder.h"
 #import "MTAsciiMathListBuilder.h"
 #import "MTMathAtomFactory.h"
-
-//NSString *const MTParseError = @"ParseError";
 
 @implementation MTAsciiMathListBuilder {
     unichar* _chars;
@@ -88,6 +87,15 @@
         MTMathAtom* atom = nil;
         unichar ch = [self getNextCharacter];
         
+        if (oneCharOnly) {
+            if (ch == '^' || ch == '}' || ch == '_') {
+                // this is not the character we are looking for.
+                // They are meant for the caller to look at.
+                [self unlookCharacter];
+                return list;
+            }
+        }
+        
         // If there is a stop character, keep scanning till we find it
         if (stop > 0 && ch == stop) {
             return list;
@@ -96,18 +104,72 @@
         if (ch == '\\' || ch <= 32) {
             continue;
         }
-        
+
+        NSString* chStr = [NSString stringWithCharacters:&ch length:1];
         // If not a number
         if (ch == '.' || (ch >= 48 && ch <= 57)) {
-            atom = [MTMathAtomFactory atomForCharacter:ch];
-            if (!atom) {
-                // Not a recognized character
-                continue;
+            atom = [MTMathAtom atomWithType:kMTMathAtomNumber value:chStr];
+        } else if (ch == '(') {
+            MTInner* oldInner = _currentInnerAtom;
+            _currentInnerAtom = [MTInner new];
+            _currentInnerAtom.leftBoundary = [MTMathAtom atomWithType:kMTMathAtomBoundary value:chStr];
+            _currentInnerAtom.innerList = [self buildInternal:false];
+            if (!_currentInnerAtom.rightBoundary) {
+                // A right node would have set the right boundary so we must be missing the right node.
+//                NSString* errorMessage = @"Missing \\right";
+//                [self setError:MTParseErrorMissingRight message:errorMessage];
+                return nil;
             }
-        }
-        else {
+            // reinstate the old inner atom.
+            MTInner* newInner = _currentInnerAtom;
+            _currentInnerAtom = oldInner;
+            atom = newInner;
+        } else if (ch == ')') {
+            NSAssert(!oneCharOnly, @"This should have been handled before");
+            NSAssert(stop == 0, @"This should have been handled before");
+
+            if (!_currentInnerAtom) {
+//                NSString* errorMessage = @"Missing \\left";
+//                [self setError:MTParseErrorMissingLeft message:errorMessage];
+                return nil;
+            }
+            
+            _currentInnerAtom.rightBoundary = [MTMathAtom atomWithType:kMTMathAtomBoundary value:chStr];
+            // return the list read so far.
+            return list;
+        }  else {
             [self unlookCharacter];
             atom = [self scanForConstant];
+        }
+        
+        if (atom == nil) {
+            if (ch == '^') {
+                NSAssert(!oneCharOnly, @"This should have been handled before");
+                
+                if (!prevAtom || prevAtom.superScript || !prevAtom.scriptsAllowed) {
+                    // If there is no previous atom, or if it already has a superscript
+                    // or if scripts are not allowed for it, then add an empty node.
+                    prevAtom = [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@""];
+                    [list addAtom:prevAtom];
+                }
+                // this is a superscript for the previous atom
+                // note: if the next char is the stopChar it will be consumed by the ^ and so it doesn't count as stop
+                prevAtom.superScript = [self buildInternal:true];
+                continue;
+            } else if (ch == '_') {
+                NSAssert(!oneCharOnly, @"This should have been handled before");
+                
+                if (!prevAtom || prevAtom.subScript || !prevAtom.scriptsAllowed) {
+                    // If there is no previous atom, or if it already has a subcript
+                    // or if scripts are not allowed for it, then add an empty node.
+                    prevAtom = [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@""];
+                    [list addAtom:prevAtom];
+                }
+                // this is a subscript for the previous atom
+                // note: if the next char is the stopChar it will be consumed by the _ and so it doesn't count as stop
+                prevAtom.subScript = [self buildInternal:true];
+                continue;
+            }
         }
         
         NSAssert(atom != nil, @"Atom shouldn't be nil");
@@ -127,29 +189,63 @@
     NSMutableString* symbol = [NSMutableString string];
     NSUInteger j = 0;
     NSUInteger k = 0;
+    // We need matchK because k will get updated on the next character when we search for a command just one longer than the found one and we don't find anything.
+    NSUInteger matchK = 0;
     
     NSArray* sortedCommands = [self sortedCommands];
     BOOL more = YES;
-    while([self hasCharacters] && more == YES) {
-        unichar ch = [self getNextCharacter];
-        [symbol appendString:[NSString stringWithCharacters:&ch length:1]];
+    NSString* match;
+    
+    for (int i = _currentChar; i < _length && more == YES; i++) {
+        [symbol appendString:[NSString stringWithCharacters:&_chars[i] length:1]];
         
         j = k;
         k = [self positionOfString:symbol inSortedArray:sortedCommands postIndex:j];
         if (k >= sortedCommands.count) {
-            continue
+            more = NO;
+            continue;
         }
         
         NSString* foundCommand = sortedCommands[k];
-        NSString* peeked = [self peekN:foundCommand.length - symbol.length];
-        NSString* full = [NSString stringWithFormat:@"%@%@",symbol,peeked];
-        BOOL areEqual = [foundCommand isEqualToString:full];
+        BOOL areEqual = [foundCommand isEqualToString:symbol];
         if (k < sortedCommands.count && areEqual == YES) {
-            return [[MTAsciiMathListBuilder supportedCommands] objectForKey:foundCommand];
+            match = foundCommand;
+            matchK = k;
         }
+        more = k < sortedCommands.count && symbol >= foundCommand;
+    }
+    
+    if (match != nil) {
+        _currentChar = _currentChar + match.length;
+        return [self atomForCommand:sortedCommands[matchK]];
+    }
+    
+    unichar ch = [self getNextCharacter];
+    // We're sure we have a variable?
+    if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
+        return [MTMathAtom atomWithType:kMTMathAtomVariable value:[NSString stringWithCharacters:&ch length:1]];
     }
     
     return nil;
+}
+
+- (MTMathAtom*) atomForCommand:(NSString*) command
+{
+    NSDictionary* supportedCommands = [MTAsciiMathListBuilder supportedCommands];
+    MTMathAtom *atom = [supportedCommands objectForKey:command];
+    if ([command isEqualToString:@"sqrt"]) {
+        // A sqrt command with one argument
+        MTRadical* rad = [MTRadical new];
+        
+        rad.radicand = [self buildInternal:true];
+        
+        return rad;
+    } else if (atom) {
+        return [atom copy];
+    } else {
+        return nil;
+    }
+    
 }
 
 - (NSString*) peekN:(NSUInteger)n {
@@ -168,29 +264,10 @@
  */
 - (NSUInteger) positionOfString:(NSString*) str inSortedArray:(NSArray*) array postIndex:(NSUInteger) index
 {
-    
-    if (index == 0) {
-        // binary search
-        index = -1;
-        NSUInteger h = array.count;
-        NSUInteger m;
-        
-        while (index + 1 < h) {
-            m = (index + h) >> 1;
-            
-            if (array[m] > str) {
-                index = m;
-            } else {
-                h = m;
-            }
-        }
-        
-        return h;
-    } else {
-        NSUInteger i;
-        for (i = index; i < array.count && array[i] < str; i++) {};
-        return i;
-    }
+    NSUInteger insertionPosition = [array indexOfObject:str inSortedRange:NSMakeRange(0, array.count) options:NSBinarySearchingInsertionIndex usingComparator:^NSComparisonResult(NSString*  _Nonnull obj1, NSString*  _Nonnull obj2) {
+        return [obj1 caseInsensitiveCompare:obj2];
+    }];
+    return insertionPosition;
 }
 
 - (NSArray*) sortedCommands
@@ -377,15 +454,15 @@
 //    }
 //    return nil;
 //}
-//
+
 //- (void) setError:(MTParseErrors) code message:(NSString*) message
 //{
 //    // Only record the first error.
 //    if (!_error) {
-//        _error = [NSError errorWithDomain:MTParseError code:code userInfo:@{ NSLocalizedDescriptionKey : message }];
+////        _error = [NSError errorWithDomain:MTParseError code:code userInfo:@{ NSLocalizedDescriptionKey : message }];
 //    }
 //}
-//
+
 + (NSDictionary*) supportedCommands
 {
     static NSDictionary* commands = nil;
@@ -440,9 +517,44 @@
                      @"Phi" : [MTMathAtom atomWithType:kMTMathAtomVariable value:@"\u03A6"],
                      @"Psi" : [MTMathAtom atomWithType:kMTMathAtomVariable value:@"\u03A8"],
                      @"Omega" : [MTMathAtom atomWithType:kMTMathAtomVariable value:@"\u03A9"],
-                     
+
+                     // Operation symbols
+                     @"-" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2212"],
+                     @"+" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"+"],
                      @"*" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u22C5"],
                      @"**" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2217"],
+                     @"***" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u22C6"],
+                     @"***" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u22C6"],
+                     @"//" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"/"],
+                     @"\\\\" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\\"],
+                     @"setminus" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\\"],
+                     @"xx" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u00D7"],
+                     @"|><" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u22C9"],
+                     @"><|" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u22CA"],
+                     @"|><|" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u22C8"],
+                     @"-:" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u00F7"],
+                     @"@" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2218"],
+                     @"o+" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2295"],
+                     @"ox" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2297"],
+                     @"o." : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2299"],
+                     @"^^" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2227"],
+                     @"vv" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2228"],
+                     @"nn" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2229"],
+                     @"uu" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u222A"],
+                     
+                     // Unary
+                     @"sqrt" : [MTMathAtom atomWithType:kMTMathAtomRadical value:@"sqrt"],
+                     
+                     // Misc
+                     @"oo" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u221E"],
+                     
+                     // Large operators
+                     @"sum" : [MTMathAtomFactory operatorWithName:@"\u2211" limits:YES],
+                     @"prod" : [MTMathAtomFactory operatorWithName:@"\u220F" limits:YES],
+                     @"^^^" : [MTMathAtomFactory operatorWithName:@"\u22C0" limits:YES],
+                     @"nnn" : [MTMathAtomFactory operatorWithName:@"\u22C2" limits:YES],
+                     @"uuu" : [MTMathAtomFactory operatorWithName:@"\u22C3" limits:YES]
+                     
                      };
         
     }
@@ -564,19 +676,19 @@
     return builder.build;
 }
 //
-//+ (MTMathList *)buildFromString:(NSString *)str error:(NSError *__autoreleasing *)error
-//{
-//    MTMathListBuilder* builder = [[MTMathListBuilder alloc] initWithString:str];
-//    MTMathList* output = [builder build];
-//    if (builder.error) {
-//        if (error) {
-//            *error = builder.error;
-//        }
-//        return nil;
-//    }
-//    return output;
-//}
-//
++ (MTMathList *)buildFromString:(NSString *)str error:(NSError *__autoreleasing *)error
+{
+    MTAsciiMathListBuilder* builder = [[MTAsciiMathListBuilder alloc] initWithString:str];
+    MTMathList* output = [builder build];
+    if (builder.error) {
+        if (error) {
+            *error = builder.error;
+        }
+        return nil;
+    }
+    return output;
+}
+
 //+ (NSString*) delimToString:(NSString*) delim
 //{
 //    NSString* command = self.delimToCommand[delim];

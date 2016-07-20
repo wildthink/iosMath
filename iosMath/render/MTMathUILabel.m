@@ -12,8 +12,9 @@
 #import "MTMathUILabel.h"
 #import "MTMathListDisplay.h"
 #import "MTFontManager.h"
-#import "MTMathListBuilder.h"
 //#import "MTAsciiMathListBuilder.h"
+#import "MTMathListBuilder.h"
+
 #import "MTTypesetter.h"
 
 @implementation MTMathUILabel {
@@ -58,7 +59,7 @@
     _errorLabel.hidden = YES;
     _errorLabel.layer.geometryFlipped = YES;
     [self addSubview:_errorLabel];
-    _textColor = [UIColor whiteColor];
+    _textColor = [UIColor blackColor];
 }
 
 - (void)setFont:(MTFont*)font
@@ -105,7 +106,7 @@
 //    _asciiMath = asciiMath;
 //    _error = nil;
 //    NSError* error = nil;
-//    _mathList = [MTAsciiMathListBuilder buildFromAsciiMathString:asciiMath error:&error];
+//    _mathList = [MTAsciiMathListBuilder buildFromString:asciiMath error:&error];
 //    if (error) {
 //        _mathList = nil;
 //        _error = error;

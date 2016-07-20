@@ -88,6 +88,8 @@
     self.demoLabels[12] = [self createMathLabel:@"\\left(\\sum_{k=1}^n a_k b_k \\right)^2 \\le \\left(\\sum_{k=1}^n a_k^2\\right)\\left(\\sum_{k=1}^n b_k^2\\right)" withHeight:60];
     
     self.demoLabels[13] = [self createMathLabel:@"{n \\brace k} = \\frac{1}{k!}\\sum_{j=0}^k (-1)^{k-j}\\binom{k}{j}(k-j)^n" withHeight:60];
+    
+    self.demoLabels[14] = [self createAsciiMathLabel:@"sum_0^oo" withHeight:60];
 
     for (NSUInteger i = 1; i < self.demoLabels.count; i++) {
         self.demoLabels[i].fontSize = 15;
@@ -217,6 +219,14 @@
     MTMathUILabel* label = [[MTMathUILabel alloc] init];
     [self setHeight:height forView:label];
     label.latex = latex;
+    label.textColor = [UIColor blueColor];
+    return label;
+}
+
+-(MTMathUILabel*) createAsciiMathLabel:(NSString*) asciiMath withHeight:(CGFloat) height {
+    MTMathUILabel* label = [[MTMathUILabel alloc] init];
+    [self setHeight:height forView:label];
+    label.asciiMath = asciiMath;
     label.textColor = [UIColor blueColor];
     return label;
 }
