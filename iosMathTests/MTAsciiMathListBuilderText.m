@@ -67,5 +67,17 @@
     XCTAssertEqualObjects(asciiMath, @"sqrt(2)", @"%@", desc);
 }
 
+- (void) testSqrtInSqrt
+{
+    NSString *str = @"\\sqrt\\sqrt2";
+    MTMathList* list = [MTMathListBuilder buildFromString:str];
+    NSString* desc = [NSString stringWithFormat:@"Error for string:%@", str];
+    
+    // convert it back to latex
+    NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
+    XCTAssertEqualObjects(latex, @"sqrt(sqrt(2))", @"%@", desc);
+}
+
+
 
 @end
