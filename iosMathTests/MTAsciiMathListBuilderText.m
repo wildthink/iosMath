@@ -78,6 +78,38 @@
     XCTAssertEqualObjects(latex, @"sqrt(sqrt(2))", @"%@", desc);
 }
 
+- (void) testRad
+{
+    NSString *str = @"\\sqrt[3]2";
+    MTMathList* list = [MTMathListBuilder buildFromString:str];
+    
+    // convert it back to latex
+    NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
+    XCTAssertEqualObjects(latex, @"root(3)(2)");
+}
+
+- (void) testFrac
+{
+    NSString *str = @"\\frac1c";
+    MTMathList* list = [MTMathListBuilder buildFromString:str];
+    NSString* desc = [NSString stringWithFormat:@"Error for string:%@", str];
+    
+    // convert it back to latex
+    NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
+    XCTAssertEqualObjects(latex, @"1/c", @"%@", desc);
+}
+
+- (void) testSymbols
+{
+    NSString *str = @"5\\times3^{2\\div2}";
+    MTMathList* list = [MTMathListBuilder buildFromString:str];
+    NSString* desc = [NSString stringWithFormat:@"Error for string:%@", str];
+    
+    // convert it back to latex
+    NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
+    XCTAssertEqualObjects(latex, @"5*3^(2:2)", @"%@", desc);
+}
+
 
 
 @end
