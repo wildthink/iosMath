@@ -88,7 +88,7 @@
         unichar ch = [self getNextCharacter];
         
         if (oneCharOnly) {
-            if (ch == '^' || ch == '}' || ch == '_') {
+            if (ch == '^' || ch == '_') {
                 // this is not the character we are looking for.
                 // They are meant for the caller to look at.
                 [self unlookCharacter];
@@ -106,13 +106,22 @@
         }
 
         NSString* chStr = [NSString stringWithCharacters:&ch length:1];
-        // If not a number
-        if (ch == '.' || (ch >= 48 && ch <= 57)) {
-            atom = [MTMathAtom atomWithType:kMTMathAtomNumber value:chStr];
-        } else if (ch == '(') {
+        if (ch == '(' || ch == '{' || ch == '[' || ch == '<') {
+            NSString *boundaryValue = chStr;
+            if ([self hasCharacters]) {
+                unichar nextChar = [self getNextCharacter];
+                if (ch == '{' && nextChar == ':') {
+                    boundaryValue = @"{:";
+                } else if (ch == '<' && nextChar == '<'){
+                    boundaryValue = @"\u2329";
+                } else {
+                    [self unlookCharacter];
+                }
+            }
+            
             MTInner* oldInner = _currentInnerAtom;
             _currentInnerAtom = [MTInner new];
-            _currentInnerAtom.leftBoundary = [MTMathAtom atomWithType:kMTMathAtomBoundary value:chStr];
+            _currentInnerAtom.leftBoundary = [MTMathAtom atomWithType:kMTMathAtomBoundary value:boundaryValue];
             _currentInnerAtom.innerList = [self buildInternal:false];
             if (!_currentInnerAtom.rightBoundary) {
                 // A right node would have set the right boundary so we must be missing the right node.
@@ -124,17 +133,35 @@
             MTInner* newInner = _currentInnerAtom;
             _currentInnerAtom = oldInner;
             atom = newInner;
-        } else if (ch == ')') {
-            NSAssert(!oneCharOnly, @"This should have been handled before");
-            NSAssert(stop == 0, @"This should have been handled before");
+        } else if (ch == ')' || ch == '}' || ch == ']' || ch == '>' || ch == ':') {
+//            NSAssert(!oneCharOnly, @"This should have been handled before");
+//            NSAssert(stop == 0, @"This should have been handled before");
+            NSString *boundaryValue = chStr;
+            if ([self hasCharacters]) {
+                unichar nextChar = [self getNextCharacter];
+                if (ch == '>' && nextChar == '>') {
+                    boundaryValue = @"\u232A";
+                } else if (ch == ':' && nextChar == '}') {
+                    boundaryValue = @":}";
+                } else {
+                    [self unlookCharacter];
+                }
+            }
 
-            if (!_currentInnerAtom) {
+            if (!_currentInnerAtom || !_currentInnerAtom.leftBoundary) {
 //                NSString* errorMessage = @"Missing \\left";
 //                [self setError:MTParseErrorMissingLeft message:errorMessage];
                 return nil;
             }
             
-            _currentInnerAtom.rightBoundary = [MTMathAtom atomWithType:kMTMathAtomBoundary value:chStr];
+            NSString* openingBracketForBoundary = [self openingBracketForBoundary:boundaryValue];
+            if (![_currentInnerAtom.leftBoundary.stringValue isEqualToString:openingBracketForBoundary]) {
+                //                NSString* errorMessage = @"Mismatched parens";
+                //                [self setError:MTParseErrorMissingLeft message:errorMessage];
+                return nil;
+            }
+            
+            _currentInnerAtom.rightBoundary = [MTMathAtom atomWithType:kMTMathAtomBoundary value:boundaryValue];
             // return the list read so far.
             return list;
         }  else {
@@ -173,6 +200,25 @@
         }
         
         NSAssert(atom != nil, @"Atom shouldn't be nil");
+//        BOOL nextIsFraction = NO;
+        if ([self hasCharacters]) {
+            unichar nextChar = [self getNextCharacter];
+            if (nextChar == '/' && !oneCharOnly) {
+                MTFraction* frac = [[MTFraction alloc] init];
+                MTMathList* newList = [[MTMathList alloc] init];
+                [newList addAtom:atom];
+                frac.numerator = newList;
+                frac.denominator = [self buildInternal:YES stopChar:stop];
+                if (_error) {
+                    return nil;
+                }
+                
+                atom = frac;
+            } else {
+                [self unlookCharacter];
+            }
+        }
+//
         [list addAtom:atom];
         prevAtom = atom;
         
@@ -182,6 +228,21 @@
         }
     }
     return list;
+}
+
+- (NSString*) openingBracketForBoundary:(NSString*)openingBracket
+{
+    static NSDictionary* mapping = nil;
+    if (!mapping) {
+        mapping = @{
+                     @":}" : @"{:",
+                     @"\u232A" : @"\u2329", // >> -> <<,
+                     @")": @"(",
+                     @"]": @"[",
+                     @"}": @"{",
+                     };
+    }
+    return [mapping objectForKey:openingBracket];
 }
 
 - (MTMathAtom*) scanForConstant
@@ -220,8 +281,25 @@
         return [self atomForCommand:sortedCommands[matchK]];
     }
     
-    unichar ch = [self getNextCharacter];
     // We're sure we have a variable?
+    NSMutableString* digits = [NSMutableString string];
+    while ([self hasCharacters]) {
+        unichar ch = [self getNextCharacter];
+        NSString* chStr = [NSString stringWithCharacters:&ch length:1];
+        // Is it a digit?
+        if (ch == '.' || (ch >= 48 && ch <= 57)) {
+            [digits appendString:chStr];
+        } else {
+            [self unlookCharacter];
+            break;
+        }
+    }
+    
+    if (digits.length > 0) {
+        return [MTMathAtom atomWithType:kMTMathAtomNumber value:digits];
+    }
+    
+    unichar ch = [self getNextCharacter];
     if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
         return [MTMathAtom atomWithType:kMTMathAtomVariable value:[NSString stringWithCharacters:&ch length:1]];
     }
@@ -237,6 +315,14 @@
         // A sqrt command with one argument
         MTRadical* rad = [MTRadical new];
         
+        rad.radicand = [self buildInternal:true];
+        
+        return rad;
+    } else if ([command isEqualToString:@"root"]) {
+        // A sqrt command with one argument
+        MTRadical* rad = [MTRadical new];
+        
+        rad.degree = [self buildInternal:true];
         rad.radicand = [self buildInternal:true];
         
         return rad;
@@ -524,7 +610,6 @@
                      @"*" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u22C5"],
                      @"**" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2217"],
                      @"***" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u22C6"],
-                     @"***" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u22C6"],
                      @"//" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"/"],
                      @"\\\\" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\\"],
                      @"setminus" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\\"],
@@ -544,6 +629,7 @@
                      
                      // Unary
                      @"sqrt" : [MTMathAtom atomWithType:kMTMathAtomRadical value:@"sqrt"],
+                     @"root" : [MTMathAtom atomWithType:kMTMathAtomRadical value:@"root"],
                      
                      // Misc
                      @"oo" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u221E"],
@@ -561,6 +647,14 @@
     return commands;
 }
 
+- (NSArray*) openingBrackets
+{
+    static NSArray* openingBrackets = nil;
+    if (!openingBrackets) {
+        openingBrackets = @[@'(', @'{', @'[', @'<'];
+    }
+    return openingBrackets;
+}
 
 //
 //+ (NSDictionary*) aliases

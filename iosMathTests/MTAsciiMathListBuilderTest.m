@@ -33,7 +33,7 @@
     NSString *str = @"42.0";
     MTMathList* list = [MTAsciiMathListBuilder buildFromString:str];
     MTMathList* finalized = list.finalized;
-    XCTAssertEqualObjects(@(list.atoms.count), @4, @"Num atoms");
+    XCTAssertEqualObjects(@(list.atoms.count), @1, @"Num atoms");
     XCTAssertEqualObjects(@(finalized.atoms.count), @1, @"Num atoms in finalized");
 }
 
@@ -71,7 +71,7 @@
 {
     NSString *toParse = @"42.0x * 5.0";
     MTMathList* list = [MTAsciiMathListBuilder buildFromString:toParse];
-    XCTAssertEqualObjects(@(list.atoms.count), @9, @"Num atoms");
+    XCTAssertEqualObjects(@(list.atoms.count), @4, @"Num atoms");
     
     MTMathList* finalized = list.finalized;
     XCTAssertEqualObjects(@(finalized.atoms.count), @4, @"Num atoms in finalized");
@@ -116,6 +116,62 @@
     XCTAssertEqualObjects(@(finalized.atoms.count), @3, @"Num atoms in finalized");
     
     XCTAssertEqualObjects(list.stringValue, @"\\sqrt{5}+x", "Atom string value");
+    
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    XCTAssertNotNil(display);
+}
+
+- (void) testRadicalWithDecimalAndVariables
+{
+    NSString *toParse = @"sqrt5.0x+x";
+    MTMathList* list = [MTAsciiMathListBuilder buildFromString:toParse];
+    XCTAssertEqualObjects(@(list.atoms.count), @4, @"Num atoms");
+    
+    MTMathList* finalized = list.finalized;
+    XCTAssertEqualObjects(@(finalized.atoms.count), @4, @"Num atoms in finalized");
+    
+    XCTAssertEqualObjects(list.stringValue, @"\\sqrt{5.0}x+x", "Atom string value");
+    
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    XCTAssertNotNil(display);
+}
+
+- (void) testRadicalWithRootcommand
+{
+    NSString *toParse = @"root5.0x+x";
+    MTMathList* list = [MTAsciiMathListBuilder buildFromString:toParse];
+    XCTAssertEqualObjects(@(list.atoms.count), @3, @"Num atoms");
+    
+    MTMathList* finalized = list.finalized;
+    XCTAssertEqualObjects(@(finalized.atoms.count), @3, @"Num atoms in finalized");
+    
+    XCTAssertEqualObjects(list.stringValue, @"\\sqrt[5.0]{x}+x", "Atom string value");
+    
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    XCTAssertNotNil(display);
+}
+
+- (void) testNestedParens
+{
+    NSString *toParse = @"(2-4) * {:5x - <<2+sqrt2x>>:}";
+    MTMathList* list = [MTAsciiMathListBuilder buildFromString:toParse];
+    XCTAssertEqualObjects(@(list.atoms.count), @3, @"Num atoms");
+    
+    MTMathList* finalized = list.finalized;
+    XCTAssertEqualObjects(@(finalized.atoms.count), @3, @"Num atoms in finalized");
+    
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    XCTAssertNotNil(display);
+}
+
+- (void) testFraction
+{
+    NSString *toParse = @"21*rootx10/(2x)";
+    MTMathList* list = [MTAsciiMathListBuilder buildFromString:toParse];
+    XCTAssertEqualObjects(@(list.atoms.count), @3, @"Num atoms");
+    
+    MTMathList* finalized = list.finalized;
+    XCTAssertEqualObjects(@(finalized.atoms.count), @3, @"Num atoms in finalized");
     
     MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
     XCTAssertNotNil(display);
