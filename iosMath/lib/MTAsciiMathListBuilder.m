@@ -315,17 +315,30 @@
         // A sqrt command with one argument
         MTRadical* rad = [MTRadical new];
         
-        rad.radicand = [self buildInternal:true];
+        rad.radicand = [self buildInternal:YES];
         
         return rad;
+        
     } else if ([command isEqualToString:@"root"]) {
         // A sqrt command with one argument
         MTRadical* rad = [MTRadical new];
         
-        rad.degree = [self buildInternal:true];
-        rad.radicand = [self buildInternal:true];
+        rad.degree = [self buildInternal:YES];
+        rad.radicand = [self buildInternal:YES];
         
         return rad;
+        
+    } else if ([command isEqualToString:@"frac"]) {
+        MTFraction* frac = [[MTFraction alloc] init];
+        
+        frac.numerator = [self buildInternal:YES];
+        frac.denominator = [self buildInternal:YES];
+        
+        if (_error) {
+            return nil;
+        }
+        return frac;
+        
     } else if (atom) {
         return [atom copy];
     } else {
@@ -351,7 +364,7 @@
 - (NSUInteger) positionOfString:(NSString*) str inSortedArray:(NSArray*) array postIndex:(NSUInteger) index
 {
     NSUInteger insertionPosition = [array indexOfObject:str inSortedRange:NSMakeRange(0, array.count) options:NSBinarySearchingInsertionIndex usingComparator:^NSComparisonResult(NSString*  _Nonnull obj1, NSString*  _Nonnull obj2) {
-        return [obj1 caseInsensitiveCompare:obj2];
+        return [obj1 compare:obj2];
     }];
     return insertionPosition;
 }
@@ -360,7 +373,7 @@
 {
     NSDictionary* supportedCommands = [MTAsciiMathListBuilder supportedCommands];
     NSArray *keys = [supportedCommands allKeys];
-    return [keys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    return [keys sortedArrayUsingSelector:@selector(compare:)];
 }
 
 //- (NSString*) readCommand
@@ -607,6 +620,7 @@
                      // Operation symbols
                      @"-" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2212"],
                      @"+" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"+"],
+                     @"+-": [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"±"],
                      @"*" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u22C5"],
                      @"**" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2217"],
                      @"***" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u22C6"],
@@ -618,6 +632,7 @@
                      @"><|" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u22CA"],
                      @"|><|" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u22C8"],
                      @"-:" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u00F7"],
+                     @"divide" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u00F7"],
                      @"@" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2218"],
                      @"o+" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2295"],
                      @"ox" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2297"],
@@ -627,20 +642,157 @@
                      @"nn" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u2229"],
                      @"uu" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u222A"],
                      
-                     // Unary
+                     // Functions that require arguments
                      @"sqrt" : [MTMathAtom atomWithType:kMTMathAtomRadical value:@"sqrt"],
                      @"root" : [MTMathAtom atomWithType:kMTMathAtomRadical value:@"root"],
+                     @"frac" : [MTMathAtom atomWithType:kMTMathAtomRadical value:@"frac"],
+                     
+                     // Relations
+                     @"=" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"="],
+                     @"|" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2223"],
+                     @"!=" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2260"],
+                     @":=" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@":="],
+                     @"lt" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"<"],
+                     @"<=" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2264"],
+                     @"lt=" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2264"],
+                     @"gt" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@">"],
+                     @">=" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2265"],
+                     @"gt=" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2265"],
+                     @"-<" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u227A"],
+                     @"-lt" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u227A"],
+                     @">-" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u227B"],
+                     @"-<=" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2AAF"],
+                     @">-=" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2AB0"],
+                     @"in" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2208"],
+                     @"!in" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2209"],
+                     @"sub" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2282"],
+                     @"sup" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2283"],
+                     @"sube" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2286"],
+                     @"supe" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2287"],
+                     @"-=" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2261"],
+                     @"~=" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2245"],
+                     @"~~" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u2248"],
+                     @"prop" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u221D"],
+                     @"=>" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u21D2"],
+                     @"<=>" : [MTMathAtom atomWithType:kMTMathAtomRelation value:@"\u21D4"],
+                     
+                     // logical symbols
+                     @"or": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"or"],
+                     @"and": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"and"],
+                     @"not": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"\u00AC"],
+                     @"if": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"if"],
+                     @"AA" : [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"\u2200"],
+                     @"EE" : [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"\u2203"],
+                     @"_|_" : [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"\u22A5"],
+                     @"TT" : [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"\u22A4"],
+                     @"|--" : [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"\u22A2"],
+                     @"|==" : [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"\u22A8"],
                      
                      // Misc
                      @"oo" : [MTMathAtom atomWithType:kMTMathAtomBinaryOperator value:@"\u221E"],
+                     // I don't think we need these
+//                     @"dx": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"{:d x:}"],
+//                     @"dy": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"{:d y:}"],
+//                     @"dz": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"{:d z:}"],
+//                     @"dt": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"{:d t:}"],
+                     @"del": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"∂"],
+                     @"grad": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"∇"],
+                     @"O/": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"∅"],
+                     @"aleph": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"ℵ"],
+                     @"...": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"..."],
+                     @":.": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"∴"],
+                     @"/_": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"∠"],
+                     @"/_\\": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"\u25B3"],
+                     @"'": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"′"],
+//                     @"tilde": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"~"],
+                     @"\\ ": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"u00A0"],
+                     @"frown": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"⌢"],
+                     @"quad": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"  "],
+                     @"qquad": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"    "],
+                     @"cdots": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"⋯"],
+                     @"vdots": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"⋮"],
+                     @"ddots": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"⋱"],
+                     @"diamond": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"⋄"],
+                     @"square": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"□"],
+                     @"CC": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"ℂ"],
+                     @"NN": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"ℕ"],
+                     @"QQ": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"ℚ"],
+                     @"RR": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"ℝ"],
+                     @"ZZ": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"ℤ"],
+//                     @"f": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"f"],
+//                     @"g": [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"g"],
+                     
+                     // Brackets
+                     @"|__": [MTMathAtom atomWithType:kMTMathAtomOpen value:@"⌊"],
+                     @"__|": [MTMathAtom atomWithType:kMTMathAtomClose value:@"⌋"],
+                     @"|~": [MTMathAtom atomWithType:kMTMathAtomOpen value:@"⌈"],
+                     @"~|": [MTMathAtom atomWithType:kMTMathAtomClose value:@"⌉"],
                      
                      // Large operators
                      @"sum" : [MTMathAtomFactory operatorWithName:@"\u2211" limits:YES],
                      @"prod" : [MTMathAtomFactory operatorWithName:@"\u220F" limits:YES],
                      @"^^^" : [MTMathAtomFactory operatorWithName:@"\u22C0" limits:YES],
                      @"nnn" : [MTMathAtomFactory operatorWithName:@"\u22C2" limits:YES],
-                     @"uuu" : [MTMathAtomFactory operatorWithName:@"\u22C3" limits:YES]
+                     @"uuu" : [MTMathAtomFactory operatorWithName:@"\u22C3" limits:YES],
+                     @"int" : [MTMathAtomFactory operatorWithName:@"\u222B" limits:NO],
+                     @"oint" : [MTMathAtomFactory operatorWithName:@"\u222B" limits:NO],
+                     @"oint": [MTMathAtomFactory operatorWithName:@"\u222E" limits:NO],
                      
+                     // No limit operators
+                     @"log" : [MTMathAtomFactory operatorWithName:@"log" limits:NO],
+                     @"ln" : [MTMathAtomFactory operatorWithName:@"ln" limits:NO],
+                     @"sin" : [MTMathAtomFactory operatorWithName:@"sin" limits:NO],
+                     @"arcsin" : [MTMathAtomFactory operatorWithName:@"arcsin" limits:NO],
+                     @"sinh" : [MTMathAtomFactory operatorWithName:@"sinh" limits:NO],
+                     @"cos" : [MTMathAtomFactory operatorWithName:@"cos" limits:NO],
+                     @"arccos" : [MTMathAtomFactory operatorWithName:@"arccos" limits:NO],
+                     @"cosh" : [MTMathAtomFactory operatorWithName:@"cosh" limits:NO],
+                     @"tan" : [MTMathAtomFactory operatorWithName:@"tan" limits:NO],
+                     @"arctan" : [MTMathAtomFactory operatorWithName:@"arctan" limits:NO],
+                     @"tanh" : [MTMathAtomFactory operatorWithName:@"tanh" limits:NO],
+                     @"cot" : [MTMathAtomFactory operatorWithName:@"cot" limits:NO],
+                     @"coth" : [MTMathAtomFactory operatorWithName:@"coth" limits:NO],
+                     @"sec" : [MTMathAtomFactory operatorWithName:@"sec" limits:NO],
+                     @"sech" : [MTMathAtomFactory operatorWithName:@"sech" limits:NO],
+                     @"csc" : [MTMathAtomFactory operatorWithName:@"csc" limits:NO],
+                     @"csch" : [MTMathAtomFactory operatorWithName:@"csch" limits:NO],
+                     @"exp" : [MTMathAtomFactory operatorWithName:@"exp" limits:NO],
+                     @"det" : [MTMathAtomFactory operatorWithName:@"det" limits:NO],
+                     @"gcd" : [MTMathAtomFactory operatorWithName:@"gcd" limits:NO],
+                     @"lcm" : [MTMathAtomFactory operatorWithName:@"lcm" limits:NO],
+                     
+                     // These are functions that should not be large operators
+                     @"lub" : [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"lub"],
+                     @"glb" : [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"glb"],
+                     @"mod" : [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"mod"],
+                     @"dim" : [MTMathAtom atomWithType:kMTMathAtomOrdinary value:@"dim"],
+                     
+                     // Figure out how to handle these, they flank inner with brackets depending on type
+//                     @"abs" : [MTMathAtomFactory operatorWithName:@"abs" limits:NO],
+                     // @"norm " : [MTMathAtomFactory operatorWithName:@"abs" limits:NO],
+                     // @"floor" : [MTMathAtomFactory operatorWithName:@"abs" limits:NO],
+                     // @"ceil" : [MTMathAtomFactory operatorWithName:@"abs" limits:NO],
+                     
+                     // Limit operators
+                     @"lim" : [MTMathAtomFactory operatorWithName:@"lim" limits:YES],
+                     @"Lim" : [MTMathAtomFactory operatorWithName:@"Lim" limits:YES],
+                     @"max" : [MTMathAtomFactory operatorWithName:@"max" limits:YES],
+                     @"min" : [MTMathAtomFactory operatorWithName:@"min" limits:YES],
+                     
+                     // Arrows
+                     @"uarr": [MTMathAtom atomWithType:kMTMathAtomRelation value:@"↑"],
+                     @"darr": [MTMathAtom atomWithType:kMTMathAtomRelation value:@"↓"],
+                     @"rarr": [MTMathAtom atomWithType:kMTMathAtomRelation value:@"→"],
+                     @"->": [MTMathAtom atomWithType:kMTMathAtomRelation value:@"→"],
+                     @">->": [MTMathAtom atomWithType:kMTMathAtomRelation value:@"↣"],
+                     @"->>": [MTMathAtom atomWithType:kMTMathAtomRelation value:@"↠"],
+                     @">->>": [MTMathAtom atomWithType:kMTMathAtomRelation value:@"⤖"],
+                     @"|->": [MTMathAtom atomWithType:kMTMathAtomRelation value:@"↦"],
+                     @"larr": [MTMathAtom atomWithType:kMTMathAtomRelation value:@"←"],
+                     @"harr": [MTMathAtom atomWithType:kMTMathAtomRelation value:@"↔"],
+                     @"rArr": [MTMathAtom atomWithType:kMTMathAtomRelation value:@"⇒"],
+                     @"lArr": [MTMathAtom atomWithType:kMTMathAtomRelation value:@"⇐"],
+                     @"hArr": [MTMathAtom atomWithType:kMTMathAtomRelation value:@"⇔"]
                      };
         
     }

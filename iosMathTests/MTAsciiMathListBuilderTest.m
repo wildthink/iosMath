@@ -177,4 +177,44 @@
     XCTAssertNotNil(display);
 }
 
+- (void) testComplicated
+{
+    NSString *toParse = @"sum_(i=1)^n i^3=((n(n+1))/2)^2";
+    MTMathList* list = [MTAsciiMathListBuilder buildFromString:toParse];
+    XCTAssertEqualObjects(@(list.atoms.count), @4, @"Num atoms");
+    
+    MTMathList* finalized = list.finalized;
+    XCTAssertEqualObjects(@(finalized.atoms.count), @4, @"Num atoms in finalized");
+    
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    XCTAssertNotNil(display);
+}
+
+- (void) testIntegral
+{
+//    \\int_{-\\infty}^\\infty e^{-x^2} dx = \\sqrt{\\pi}
+    NSString *toParse = @"int_0^ooe^(-x^2)dx = sqrtpi";
+    MTMathList* list = [MTAsciiMathListBuilder buildFromString:toParse];
+    XCTAssertEqualObjects(@(list.atoms.count), @6, @"Num atoms");
+    
+    MTMathList* finalized = list.finalized;
+    XCTAssertEqualObjects(@(finalized.atoms.count), @6, @"Num atoms in finalized");
+    
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    XCTAssertNotNil(display);
+}
+
+- (void) testFracCommand
+{
+    NSString *toParse = @"frac1x";
+    MTMathList* list = [MTAsciiMathListBuilder buildFromString:toParse];
+    XCTAssertEqualObjects(@(list.atoms.count), @1, @"Num atoms");
+    
+    MTMathList* finalized = list.finalized;
+    XCTAssertEqualObjects(@(finalized.atoms.count), @1, @"Num atoms in finalized");
+    
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    XCTAssertNotNil(display);
+}
+
 @end
