@@ -143,6 +143,22 @@
     XCTAssertEqualObjects(latex, @"2_(x^(4))", @"%@", desc);
 }
 
+- (void) testProduct
+{
+    NSString *str = @"\\prod_a^b";
+    MTMathList* list = [MTMathListBuilder buildFromString:str];
+    NSString* desc = [NSString stringWithFormat:@"Error for string:%@", str];
+    
+    // convert it back to latex
+    NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
+    // \prod ^{b}_{a}
+    
+    // ∏^(b)_(a)
+    XCTAssertEqualObjects(latex, @"prod_a^b", @"%@", desc);
+    
+
+}
+
 
 
 @end
