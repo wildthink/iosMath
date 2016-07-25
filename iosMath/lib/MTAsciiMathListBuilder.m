@@ -76,7 +76,7 @@
 - (MTMathList*)buildInternal:(BOOL) oneCharOnly stopChar:(unichar) stop
 {
     MTMathList* list = [MTMathList new];
-    NSAssert(!(oneCharOnly && (stop > 0)), @"Cannot set both oneCharOnly and stopChar.");
+//    NSAssert(!(oneCharOnly && (stop > 0)), @"Cannot set both oneCharOnly and stopChar.");
     MTMathAtom* prevAtom = nil;
     
     while([self hasCharacters]) {
@@ -97,7 +97,9 @@
         }
         
         // If there is a stop character, keep scanning till we find it
+        // TODO: handle two-letter stop chars
         if (stop > 0 && ch == stop) {
+//            [list addAtom:[MTMathAtom atomWithType:kMTMathAtomClose value:[NSString stringWithCharacters:&stop length:1]]];
             return list;
         }
         
@@ -118,21 +120,42 @@
                     [self unlookCharacter];
                 }
             }
-            
-            MTInner* oldInner = _currentInnerAtom;
-            _currentInnerAtom = [MTInner new];
-            _currentInnerAtom.leftBoundary = [MTMathAtom atomWithType:kMTMathAtomBoundary value:boundaryValue];
-            _currentInnerAtom.innerList = [self buildInternal:false];
-            if (!_currentInnerAtom.rightBoundary) {
-                // A right node would have set the right boundary so we must be missing the right node.
-//                NSString* errorMessage = @"Missing \\right";
-//                [self setError:MTParseErrorMissingRight message:errorMessage];
-                return nil;
+            if (oneCharOnly && list.atoms.count == 0) {
+                NSString* closingBracket = [self closingBracketForBoundary:chStr];
+                // this puts us in a recursive routine, and sets oneCharOnly to false and no stop character
+                MTMathList* sublist = [self buildInternal:NO stopChar:')'];
+                prevAtom = [sublist.atoms lastObject];
+                [list append:sublist];
+                return list;
+            } else {
+//                atom = [MTMathAtom atomWithType:kMTMathAtomOpen value:boundaryValue];
+                MTInner* oldInner = _currentInnerAtom;
+                _currentInnerAtom = [MTInner new];
+                _currentInnerAtom.leftBoundary = [MTMathAtom atomWithType:kMTMathAtomBoundary value:boundaryValue];
+                _currentInnerAtom.innerList = [self buildInternal:NO];
+                if (!_currentInnerAtom.rightBoundary) {
+                    // A right node would have set the right boundary so we must be missing the right node.
+                    //                NSString* errorMessage = @"Missing \\right";
+                    //                [self setError:MTParseErrorMissingRight message:errorMessage];
+                    return nil;
+                }
+                // reinstate the old inner atom.
+                MTInner* newInner = _currentInnerAtom;
+                _currentInnerAtom = oldInner;
+                atom = newInner;
+
             }
-            // reinstate the old inner atom.
-            MTInner* newInner = _currentInnerAtom;
-            _currentInnerAtom = oldInner;
-            atom = newInner;
+//            NSString* closingBracket = [self closingBracketForBoundary:chStr];
+//            // this puts us in a recursive routine, and sets oneCharOnly to false and no stop character
+//            MTMathList* sublist = [self buildInternal:false stopChar:(unichar)closingBracket];
+//            prevAtom = [sublist.atoms lastObject];
+//            [list append:sublist];
+//            if (oneCharOnly) {
+//                return list;
+//            }
+//            continue;
+            
+        
         } else if (ch == ')' || ch == '}' || ch == ']' || ch == '>' || ch == ':') {
 //            NSAssert(!oneCharOnly, @"This should have been handled before");
 //            NSAssert(stop == 0, @"This should have been handled before");
@@ -150,20 +173,23 @@
 
             if (!_currentInnerAtom || !_currentInnerAtom.leftBoundary) {
 //                NSString* errorMessage = @"Missing \\left";
-//                [self setError:MTParseErrorMissingLeft message:errorMessage];
-                return nil;
+////                [self setError:MTParseErrorMissingLeft message:errorMessage];
+//                return nil;
+                atom = [MTMathAtom atomWithType:kMTMathAtomClose value:@")"];
+            } else {
+                NSString* openingBracketForBoundary = [self openingBracketForBoundary:boundaryValue];
+                if (![_currentInnerAtom.leftBoundary.stringValue isEqualToString:openingBracketForBoundary]) {
+                    //                NSString* errorMessage = @"Mismatched parens";
+                    //                [self setError:MTParseErrorMissingLeft message:errorMessage];
+                    return nil;
+                }
+                
+                _currentInnerAtom.rightBoundary = [MTMathAtom atomWithType:kMTMathAtomBoundary value:boundaryValue];
+                // return the list read so far.
+                return list;
             }
             
-            NSString* openingBracketForBoundary = [self openingBracketForBoundary:boundaryValue];
-            if (![_currentInnerAtom.leftBoundary.stringValue isEqualToString:openingBracketForBoundary]) {
-                //                NSString* errorMessage = @"Mismatched parens";
-                //                [self setError:MTParseErrorMissingLeft message:errorMessage];
-                return nil;
-            }
-            
-            _currentInnerAtom.rightBoundary = [MTMathAtom atomWithType:kMTMathAtomBoundary value:boundaryValue];
-            // return the list read so far.
-            return list;
+
         }  else {
             [self unlookCharacter];
             atom = [self scanForConstant];
@@ -181,7 +207,7 @@
                 }
                 // this is a superscript for the previous atom
                 // note: if the next char is the stopChar it will be consumed by the ^ and so it doesn't count as stop
-                prevAtom.superScript = [self buildInternal:true];
+                prevAtom.superScript = [self buildInternal:YES];
                 continue;
             } else if (ch == '_') {
                 NSAssert(!oneCharOnly, @"This should have been handled before");
@@ -194,7 +220,7 @@
                 }
                 // this is a subscript for the previous atom
                 // note: if the next char is the stopChar it will be consumed by the _ and so it doesn't count as stop
-                prevAtom.subScript = [self buildInternal:true];
+                prevAtom.subScript = [self buildInternal:YES];
                 continue;
             }
         }
@@ -241,6 +267,20 @@
                      @"]": @"[",
                      @"}": @"{",
                      };
+    }
+    return [mapping objectForKey:openingBracket];
+}
+
+- (NSString*) closingBracketForBoundary:(NSString*)openingBracket
+{
+    static NSDictionary* mapping = nil;
+    if (!mapping) {
+        mapping = @{
+                    @"<": @">", // >> -> <<,
+                    @"(": @")",
+                    @"[": @"]",
+                    @"{": @"}",
+                    };
     }
     return [mapping objectForKey:openingBracket];
 }

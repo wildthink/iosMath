@@ -10,6 +10,7 @@
 
 #import "MTFontManager.h"
 #import "MTTypesetter.h"
+#import "MTMathListBuilder.h"
 #import "MTAsciiMathListBuilder.h"
 
 @interface MTAsciiMathListBuilderTest : XCTestCase
@@ -100,7 +101,7 @@
     XCTAssertEqualObjects(@(finalized.atoms.count), @1, @"Num atoms in finalized");
     
     MTMathAtom* atom = list.atoms[0];
-    XCTAssertEqualObjects(atom.stringValue, @"∑^{\\inner[(]{5+x}[)]}_{0}", "Atom string value");
+    XCTAssertEqualObjects(atom.stringValue, @"∑^{5+x}_{0}", "Atom string value");
     
     MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
     XCTAssertNotNil(display);
@@ -215,6 +216,58 @@
     
     MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
     XCTAssertNotNil(display);
+}
+
+- (void) testLimitCommand {
+    NSString *toParse = @"lim_(1->oo)";
+    MTMathList* list = [MTAsciiMathListBuilder buildFromString:toParse];
+    XCTAssertEqualObjects(@(list.atoms.count), @1, @"Num atoms");
+    
+    MTMathList* finalized = list.finalized;
+    XCTAssertEqualObjects(@(finalized.atoms.count), @1, @"Num atoms in finalized");
+    
+    NSString *latexToParse = @"\\lim_{x\\to\\infty}";
+    MTMathList* latexList = [MTMathListBuilder buildFromString:latexToParse];
+    
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    XCTAssertNotNil(display);
+}
+
+- (void) testSinCommand {
+    NSString *toParse = @"sin(30) + 10";
+    MTMathList* list = [MTAsciiMathListBuilder buildFromString:toParse];
+    XCTAssertEqualObjects(@(list.atoms.count), @4, @"Num atoms");
+    
+    NSString *latexToParse = @"\\sin(30) + 10";
+    MTMathList* latexList = [MTMathListBuilder buildFromString:latexToParse];
+    
+    MTMathList* finalized = list.finalized;
+    XCTAssertEqualObjects(@(finalized.atoms.count), @4, @"Num atoms in finalized");
+    
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    XCTAssertNotNil(display);
+    
+    MTMathListDisplay* latexDisplay = [MTTypesetter createLineForMathList:latexList.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    XCTAssertNotNil(latexDisplay);
+}
+
+- (void) testComplicatedParens {
+//    (1/(2x*(2x/2)))(2x)
+    NSString *toParse = @"(1/(2x*(2x/2)))(2x)";
+    MTMathList* list = [MTAsciiMathListBuilder buildFromString:toParse];
+    XCTAssertEqualObjects(@(list.atoms.count), @2, @"Num atoms");
+    
+    NSString *latexToParse = @"\\sin(30) + 10";
+    MTMathList* latexList = [MTMathListBuilder buildFromString:latexToParse];
+    
+    MTMathList* finalized = list.finalized;
+    XCTAssertEqualObjects(@(finalized.atoms.count), @2, @"Num atoms in finalized");
+    
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    XCTAssertNotNil(display);
+    
+    MTMathListDisplay* latexDisplay = [MTTypesetter createLineForMathList:latexList.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    XCTAssertNotNil(latexDisplay);
 }
 
 @end
