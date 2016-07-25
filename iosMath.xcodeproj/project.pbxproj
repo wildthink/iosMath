@@ -52,9 +52,9 @@
 		49EEFD7C1D19B664002D15C4 /* MTTypesetter.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEFD7A1D19B664002D15C4 /* MTTypesetter.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		49EEFD7D1D19B664002D15C4 /* MTTypesetter.m in Sources */ = {isa = PBXBuildFile; fileRef = 49EEFD7B1D19B664002D15C4 /* MTTypesetter.m */; };
 		66B91F54A155071228C33E27 /* libPods-iosMathExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7305B3D5272E07D296E1146 /* libPods-iosMathExample.a */; };
-		8C9D81B51D3ECAC0002B80C7 /* MTAsciiMathListBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 8C9D81B21D3EB6DE002B80C7 /* MTAsciiMathListBuilder.h */; };
+		8C9D81B51D3ECAC0002B80C7 /* MTAsciiMathListBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 8C9D81B21D3EB6DE002B80C7 /* MTAsciiMathListBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8C9D81B61D3ECAC4002B80C7 /* MTAsciiMathListBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C9D81B31D3EB6DE002B80C7 /* MTAsciiMathListBuilder.m */; };
-		8C9D81BA1D3ECB34002B80C7 /* MTAsciiMathListBuilderText.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C9D81B91D3ECB34002B80C7 /* MTAsciiMathListBuilderText.m */; };
+		8C9D81BA1D3ECB34002B80C7 /* MTAsciiMathListBuilderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C9D81B91D3ECB34002B80C7 /* MTAsciiMathListBuilderTest.m */; };
 		A4AF82224BB9060CC51567E8 /* libPods-iosMathTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 847963E8DF103FF2BAABFCD8 /* libPods-iosMathTests.a */; };
 		D94FE3531B90DD29002D11E2 /* MTMathUILabel.h in Headers */ = {isa = PBXBuildFile; fileRef = 492EECF417DAED9000939107 /* MTMathUILabel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D94FE3541B90DE46002D11E2 /* MTMathListDisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 492EECF317DAED9000939107 /* MTMathListDisplay.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -136,7 +136,7 @@
 		847963E8DF103FF2BAABFCD8 /* libPods-iosMathTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iosMathTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8C9D81B21D3EB6DE002B80C7 /* MTAsciiMathListBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MTAsciiMathListBuilder.h; sourceTree = "<group>"; };
 		8C9D81B31D3EB6DE002B80C7 /* MTAsciiMathListBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTAsciiMathListBuilder.m; sourceTree = "<group>"; };
-		8C9D81B91D3ECB34002B80C7 /* MTAsciiMathListBuilderText.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTAsciiMathListBuilderText.m; sourceTree = "<group>"; };
+		8C9D81B91D3ECB34002B80C7 /* MTAsciiMathListBuilderTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MTAsciiMathListBuilderTest.m; sourceTree = "<group>"; };
 		964660A84E6FEDD150C994C8 /* Pods-iosMathTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosMathTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-iosMathTests/Pods-iosMathTests.release.xcconfig"; sourceTree = "<group>"; };
 		B16B9A63054AE3FFB5C36F6B /* Pods-iosMathExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iosMathExample.release.xcconfig"; path = "Pods/Target Support Files/Pods-iosMathExample/Pods-iosMathExample.release.xcconfig"; sourceTree = "<group>"; };
 		B7305B3D5272E07D296E1146 /* libPods-iosMathExample.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-iosMathExample.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -273,7 +273,7 @@
 		49965F2317CBBA2700A555C5 /* iosMathTests */ = {
 			isa = PBXGroup;
 			children = (
-				8C9D81B91D3ECB34002B80C7 /* MTAsciiMathListBuilderText.m */,
+				8C9D81B91D3ECB34002B80C7 /* MTAsciiMathListBuilderTest.m */,
 				49B83EEF17CE71AC0014B739 /* MTMathListBuilderTest.m */,
 				49B83EF517CF046A0014B739 /* MTMathListTest.m */,
 				490465BE1D23DA8400F82033 /* MTTypesetterTest.m */,
@@ -723,7 +723,7 @@
 			files = (
 				498730A717D548190041B02B /* MTMathListBuilderTest.m in Sources */,
 				498730A817D548190041B02B /* MTMathListTest.m in Sources */,
-				8C9D81BA1D3ECB34002B80C7 /* MTAsciiMathListBuilderText.m in Sources */,
+				8C9D81BA1D3ECB34002B80C7 /* MTAsciiMathListBuilderTest.m in Sources */,
 				490465BF1D23DA8400F82033 /* MTTypesetterTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

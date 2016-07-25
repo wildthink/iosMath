@@ -610,7 +610,7 @@
         } else if (atom.type == kMTMathAtomFraction) {
             MTFraction* frac = (MTFraction*) atom;
             if (frac.hasRule) {
-                [str appendFormat:@"\\frac{%@}{%@}", [self mathListToString:frac.numerator], [self mathListToString:frac.denominator]];
+                [str appendFormat:@"%@/%@", [self mathListToString:frac.numerator], [self mathListToString:frac.denominator]];
             } else {
                 NSString* command = nil;
                 if (!frac.leftDelimiter && !frac.rightDelimiter) {

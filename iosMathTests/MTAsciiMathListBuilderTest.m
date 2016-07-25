@@ -8,8 +8,8 @@
 
 @import XCTest;
 
-#import "MTAsciiMathListBuilder.h"
 #import "MTMathListBuilder.h"
+#import "MTAsciiMathListBuilder.h"
 
 @interface MTAsciiMathListBuilderTest : XCTestCase
 
