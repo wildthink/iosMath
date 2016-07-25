@@ -18,42 +18,6 @@
 
 @implementation MTMathConversionTest
 
-- (void) testNumberParse
-{
-    NSString *str = @"42.0";
-    MTMathList* list = [MTAsciiMathListBuilder buildFromString:str];
-    MTMathList* finalized = list.finalized;
-    XCTAssertEqualObjects(@(list.atoms.count), @4, @"Num atoms");
-    XCTAssertEqualObjects(@(finalized.atoms.count), @1, @"Num atoms in finalized");
-}
-
-- (void) testNumberParse2
-{
-    NSString *str = @"53203";
-    MTMathList* list = [MTAsciiMathListBuilder buildFromString:str];
-    MTMathList* finalized = list.finalized;
-    XCTAssertEqualObjects(@(list.atoms.count), @5, @"Num atoms");
-    XCTAssertEqualObjects(@(finalized.atoms.count), @1, @"Num atoms in finalized");
-}
-
-- (void) testSimpleCommand
-{
-    NSString *str = @"*";
-    MTMathList* list = [MTAsciiMathListBuilder buildFromString:str];
-    MTMathList* finalized = list.finalized;
-    XCTAssertEqualObjects(@(list.atoms.count), @1, @"Num atoms");
-    XCTAssertEqualObjects(@(finalized.atoms.count), @1, @"Num atoms in finalized");
-}
-
-- (void) testMoreComplicatedCommand
-{
-    NSString *str = @"**";
-    MTMathList* list = [MTAsciiMathListBuilder buildFromString:str];
-    MTMathList* finalized = list.finalized;
-    XCTAssertEqualObjects(@(list.atoms.count), @1, @"Num atoms");
-    XCTAssertEqualObjects(@(finalized.atoms.count), @1, @"Num atoms in finalized");
-}
-
 // MARK - MathList to AsciiMath conversion
 
 - (void) testSqrt
