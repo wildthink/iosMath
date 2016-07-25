@@ -666,11 +666,11 @@
         }
         
         if (atom.superScript) {
-            [str appendFormat:@"^{%@}", [self mathListToString:atom.superScript]];
+            [str appendFormat:@"^(%@)", [self mathListToString:atom.superScript]];
         }
         
         if (atom.subScript) {
-            [str appendFormat:@"_{%@}", [self mathListToString:atom.subScript]];
+            [str appendFormat:@"_(%@)", [self mathListToString:atom.subScript]];
         }
     }
     return [str copy];

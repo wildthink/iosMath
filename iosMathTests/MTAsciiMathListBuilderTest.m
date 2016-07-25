@@ -110,6 +110,28 @@
     XCTAssertEqualObjects(latex, @"5*3^(2:2)", @"%@", desc);
 }
 
+- (void) testSuperScript
+{
+    NSString *str = @"a^{(b+4)^{2}}";
+    MTMathList* list = [MTMathListBuilder buildFromString:str];
+    NSString* desc = [NSString stringWithFormat:@"Error for string:%@", str];
+    
+    // convert it back to latex
+    NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
+    XCTAssertEqualObjects(latex, @"a^((b+4)^(2))", @"%@", desc);
+}
+
+- (void) testSubScript
+{
+    NSString *str = @"2_{x^4}";
+    MTMathList* list = [MTMathListBuilder buildFromString:str];
+    NSString* desc = [NSString stringWithFormat:@"Error for string:%@", str];
+    
+    // convert it back to latex
+    NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
+    XCTAssertEqualObjects(latex, @"2_(x^(4))", @"%@", desc);
+}
+
 
 
 @end
