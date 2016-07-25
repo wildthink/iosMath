@@ -51,11 +51,10 @@
 		49EEFD7C1D19B664002D15C4 /* MTTypesetter.h in Headers */ = {isa = PBXBuildFile; fileRef = 49EEFD7A1D19B664002D15C4 /* MTTypesetter.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		49EEFD7D1D19B664002D15C4 /* MTTypesetter.m in Sources */ = {isa = PBXBuildFile; fileRef = 49EEFD7B1D19B664002D15C4 /* MTTypesetter.m */; };
 		66B91F54A155071228C33E27 /* libPods-iosMathExample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7305B3D5272E07D296E1146 /* libPods-iosMathExample.a */; };
+		751C96E11D46CE8D00BCCD43 /* MTMathListBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C9FB2691D469627004B5898 /* MTMathListBuilder.m */; };
+		751C96E21D46CE9100BCCD43 /* MTAsciiMathListBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C9D81B31D3EB6DE002B80C7 /* MTAsciiMathListBuilder.m */; };
 		8C9D81B51D3ECAC0002B80C7 /* MTAsciiMathListBuilder.h in Headers */ = {isa = PBXBuildFile; fileRef = 8C9D81B21D3EB6DE002B80C7 /* MTAsciiMathListBuilder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		8C9D81BA1D3ECB34002B80C7 /* MTAsciiMathListBuilderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C9D81B91D3ECB34002B80C7 /* MTAsciiMathListBuilderTest.m */; };
-		8C9D81BE1D400D52002B80C7 /* MTAsciiMathListBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C9D81B31D3EB6DE002B80C7 /* MTAsciiMathListBuilder.m */; };
-		8C9D81BF1D400DFA002B80C7 /* MTAsciiMathListBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C9D81B31D3EB6DE002B80C7 /* MTAsciiMathListBuilder.m */; };
-		8C9FB26A1D469627004B5898 /* MTMathListBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 8C9FB2691D469627004B5898 /* MTMathListBuilder.m */; };
 		A4AF82224BB9060CC51567E8 /* libPods-iosMathTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 847963E8DF103FF2BAABFCD8 /* libPods-iosMathTests.a */; };
 		D94FE3531B90DD29002D11E2 /* MTMathUILabel.h in Headers */ = {isa = PBXBuildFile; fileRef = 492EECF417DAED9000939107 /* MTMathUILabel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D94FE3541B90DE46002D11E2 /* MTMathListDisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 492EECF317DAED9000939107 /* MTMathListDisplay.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -694,8 +693,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				492EED0817DAEDD200939107 /* MTFontManager.m in Sources */,
+				751C96E11D46CE8D00BCCD43 /* MTMathListBuilder.m in Sources */,
+				751C96E21D46CE9100BCCD43 /* MTAsciiMathListBuilder.m in Sources */,
 				492EED0917DAEDD200939107 /* MTFontMathTable.m in Sources */,
-				8C9D81BE1D400D52002B80C7 /* MTAsciiMathListBuilder.m in Sources */,
 				492EED0A17DAEDD200939107 /* MTMathListDisplay.m in Sources */,
 				49EEFD7D1D19B664002D15C4 /* MTTypesetter.m in Sources */,
 				492EED0B17DAEDD200939107 /* MTMathUILabel.m in Sources */,
@@ -711,7 +711,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C9FB26A1D469627004B5898 /* MTMathListBuilder.m in Sources */,
 				49B83F0017CF2AE90014B739 /* AppDelegate.m in Sources */,
 				49B83F0217CF2AE90014B739 /* main.m in Sources */,
 				49B83F0817CF2B420014B739 /* ViewController.m in Sources */,
@@ -724,7 +723,6 @@
 			files = (
 				498730A717D548190041B02B /* MTMathListBuilderTest.m in Sources */,
 				498730A817D548190041B02B /* MTMathListTest.m in Sources */,
-				8C9D81BF1D400DFA002B80C7 /* MTAsciiMathListBuilder.m in Sources */,
 				8C9D81BA1D3ECB34002B80C7 /* MTAsciiMathListBuilderTest.m in Sources */,
 				490465BF1D23DA8400F82033 /* MTTypesetterTest.m in Sources */,
 			);
