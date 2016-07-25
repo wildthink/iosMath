@@ -594,7 +594,7 @@
 //}
 //
 
-// MARK - MathList to AsciiMath String
+// MARK - MathList (created from Latex) to AsciiMath String
 
 + (NSString *)mathListToString:(MTMathList *)ml
 {
@@ -606,7 +606,7 @@
         NSString* command = textToCommands[atom.nucleus];
         
         if (command) {
-            [str appendFormat:@"\\%@ ", command];
+            [str appendFormat:@"%@ ", command];
         } else if (atom.type == kMTMathAtomFraction) {
             MTFraction* frac = (MTFraction*) atom;
             if (frac.hasRule) {
@@ -661,6 +661,12 @@
         } else if ([atom.nucleus isEqualToString:@"\u2212"]) {
             // math minus
             [str appendString:@"-"];
+        } else if ([atom.nucleus isEqualToString:@"\u00d7"]) {
+            // math multiplier
+            [str appendString:@"*"];
+        } else if ([atom.nucleus isEqualToString:@"\u00F7"]) {
+            // math divider
+            [str appendString:@":"];
         } else {
             [str appendString:atom.nucleus];
         }

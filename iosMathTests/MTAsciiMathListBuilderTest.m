@@ -110,6 +110,17 @@
     XCTAssertEqualObjects(latex, @"5*3^(2:2)", @"%@", desc);
 }
 
+- (void) testSymbolsTwo
+{
+    NSString *str = @"42.0x\\times5.0";
+    MTMathList* list = [MTMathListBuilder buildFromString:str];
+    NSString* desc = [NSString stringWithFormat:@"Error for string:%@", str];
+    
+    // convert it back to latex
+    NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
+    XCTAssertEqualObjects(latex, @"42.0x*5.0", @"%@", desc);
+}
+
 - (void) testSuperScript
 {
     NSString *str = @"a^{(b+4)^{2}}";
