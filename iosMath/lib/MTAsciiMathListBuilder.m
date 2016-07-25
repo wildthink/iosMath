@@ -627,10 +627,13 @@
                 [str appendFormat:@"{%@ \\%@ %@}", [self mathListToString:frac.numerator], command, [self mathListToString:frac.denominator]];
             }
         } else if (atom.type == kMTMathAtomRadical) {
-            [str appendString:@"sqrt"];
+            
             MTRadical* rad = (MTRadical*) atom;
             if (rad.degree) {
-                [str appendFormat:@"[%@]", [self mathListToString:rad.degree]];
+                [str appendString:@"root"];
+                [str appendFormat:@"(%@)", [self mathListToString:rad.degree]];
+            } else {
+                [str appendString:@"sqrt"];
             }
             [str appendFormat:@"(%@)", [self mathListToString:rad.radicand]];
         } else if (atom.type == kMTMathAtomInner) {
