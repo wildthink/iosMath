@@ -991,21 +991,58 @@
     return @"";
 }
 
+// Dictionary that maps a latex command to an ascii math equivalent
+
++ (NSDictionary<NSString*, NSString*> *) latexCommandToAsciiMathCommands
+{
+    static NSDictionary* symbols = nil;
+    if (!symbols) {
+        symbols = @{
+                   @"times" : @"*",
+                   @"div" : @":"
+                   };
+    }
+    return symbols;
+}
+
+// Dictionary that maps a latex non-command nucleus to an ascii math command
+
++ (NSDictionary<NSString*, NSString*> *) latexNucleusToAsciiMathCommands
+{
+    static NSDictionary* symbols = nil;
+    if (!symbols) {
+        symbols = @{
+                    @"\u2211" : @"sum",
+                    @"\u220F" : @"prod",
+                    @"\u2236" : @":",
+                    @"\u2212" : @"-",
+                    @"\u00d7" : @"*",
+                    @"\u00F7" : @":"                    
+                    };
+    }
+    return symbols;
+}
+
 // Converts MathList created from Latex string to AsciiMath
 
 + (NSString *)mathListToString:(MTMathList *)ml
 {
-    NSDictionary* textToCommands = [MTAsciiMathListBuilder textToCommands];
+    NSDictionary* textToCommands = [MTMathListBuilder textToCommands];
+    NSDictionary* commandTranslationsInAsciiMath = [self latexCommandToAsciiMathCommands];
+    NSDictionary* nucleusToAsciiMath = [self latexNucleusToAsciiMathCommands];
     NSMutableString* str = [NSMutableString string];
     
     for (MTMathAtom* atom in ml.atoms) {
         
         NSString* command = textToCommands[atom.nucleus];
+        NSString* commandTranslation = commandTranslationsInAsciiMath[command];
+        if (commandTranslationsInAsciiMath) {
+            command = commandTranslation;
+        }
         
-//        if (command) {
-//            [str appendFormat:@"%@ ", command];
-//        } else
-        if (atom.type == kMTMathAtomFraction) {
+        if (command) {
+            [str appendFormat:@"%@", command];
+        } else if (atom.type == kMTMathAtomFraction) {
             MTFraction* frac = (MTFraction*) atom;
             if (frac.hasRule) {
                 [str appendFormat:@"%@/%@", [self mathListToString:frac.numerator], [self mathListToString:frac.denominator]];
@@ -1038,37 +1075,29 @@
             MTInner* inner = (MTInner*) atom;
             if (inner.leftBoundary || inner.rightBoundary) {
                 if (inner.leftBoundary) {
-                    [str appendFormat:@"\\left%@ ", [self delimToString:inner.leftBoundary.nucleus]];
+                    [str appendFormat:@"(%@", [self delimToString:inner.leftBoundary.nucleus]];
                 } else {
-                    [str appendString:@"\\left. "];
+                    [str appendString:@"("];
                 }
                 [str appendString:[self mathListToString:inner.innerList]];
                 if (inner.rightBoundary) {
-                    [str appendFormat:@"\\right%@ ", [self delimToString:inner.rightBoundary.nucleus]];
+                    [str appendFormat:@")%@", [self delimToString:inner.rightBoundary.nucleus]];
                 } else {
-                    [str appendString:@"\\right. "];
+                    [str appendString:@")"];
                 }
             } else {
-                [str appendFormat:@"{%@}", [self mathListToString:inner.innerList]];
+                [str appendFormat:@"(%@)", [self mathListToString:inner.innerList]];
             }
         } else if (atom.nucleus.length == 0) {
             [str appendString:@"{}"];
-        } else if ([atom.nucleus isEqualToString:@"\u2236"]) {
-            // math colon
-            [str appendString:@":"];
-        } else if ([atom.nucleus isEqualToString:@"\u2212"]) {
-            // math minus
-            [str appendString:@"-"];
-        } else if ([atom.nucleus isEqualToString:@"\u00d7"]) {
-            // math multiplier
-            [str appendString:@"*"];
-        } else if ([atom.nucleus isEqualToString:@"\u00F7"]) {
-            // math divider
-            [str appendString:@":"];
-        } else if ([atom.nucleus isEqualToString:@"\u220F"]) {
-            [str appendString:@"prod"];
         } else {
-            [str appendString:atom.nucleus];
+            
+            NSString* nucleusTranslation = nucleusToAsciiMath[atom.nucleus];
+            if (nucleusTranslation) {
+                [str appendString:nucleusTranslation];
+            } else {
+                [str appendString:atom.nucleus];
+            }
         }
         
         if (atom.subScript) {
