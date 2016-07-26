@@ -1084,7 +1084,7 @@
                 [str appendFormat:@"(%@)", [self mathListToString:inner.innerList]];
             }
         } else if (atom.nucleus.length == 0) {
-            [str appendString:@"{}"];
+            [str appendString:@"()"];
         } else {
             
             NSString* nucleusTranslation = nucleusToAsciiMath[atom.nucleus];
