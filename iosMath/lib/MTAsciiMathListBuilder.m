@@ -7,7 +7,7 @@
 //
 // https://github.com/mathjax/MathJax/blob/master/unpacked/jax/input/AsciiMath/jax.js
 
-//#import "MTMathListBuilder.h"
+#import "MTMathListBuilder.h"
 #import "MTAsciiMathListBuilder.h"
 #import "MTMathAtomFactory.h"
 
@@ -871,91 +871,91 @@
 //    return aliases;
 //}
 //
-//+(NSDictionary<NSString*, NSString*> *) delimiters
-//{
-//    static NSDictionary* delims = nil;
-//    if (!delims) {
-//        delims = @{
-//                   @"." : @"", // . means no delimiter
-//                   @"(" : @"(",
-//                   @")" : @")",
-//                   @"[" : @"[",
-//                   @"]" : @"]",
-//                   @"<" : @"\u2329",
-//                   @">" : @"\u232A",
-//                   @"/" : @"/",
-//                   @"\\" : @"\\",
-//                   @"|" : @"|",
-//                   @"lgroup" : @"\u27EE",
-//                   @"rgroup" : @"\u27EF",
-//                   @"||" : @"\u2016",
-//                   @"Vert" : @"\u2016",
-//                   @"vert" : @"|",
-//                   @"uparrow" : @"\u2191",
-//                   @"downarrow" : @"\u2193",
-//                   @"updownarrow" : @"\u2195",
-//                   @"Uparrow" : @"21D1",
-//                   @"Downarrow" : @"21D3",
-//                   @"Updownarrow" : @"21D5",
-//                   @"backslash" : @"\\",
-//                   @"rangle" : @"\u232A",
-//                   @"langle" : @"\u2329",
-//                   @"rbrace" : @"}",
-//                   @"}" : @"}",
-//                   @"{" : @"{",
-//                   @"lbrace" : @"{",
-//                   @"lceil" : @"\u2308",
-//                   @"rceil" : @"\u2309",
-//                   @"lfloor" : @"\u230A",
-//                   @"rfloor" : @"\u230B",
-//                   };
-//    }
-//    return delims;
-//}
-//
-//+ (NSDictionary*) textToCommands
-//{
-//    static NSDictionary* textToCommands = nil;
-//    if (!textToCommands) {
-//        NSDictionary* commands = [self supportedCommands];
-//        NSMutableDictionary* mutableDict = [NSMutableDictionary dictionaryWithCapacity:commands.count];
-//        for (NSString* command in commands) {
-//            MTMathAtom* atom = commands[command];
-//            mutableDict[atom.nucleus] = command;
-//        }
-//        textToCommands = [mutableDict copy];
-//    }
-//    return textToCommands;
-//}
-//
-//+ (NSDictionary*) delimToCommand
-//{
-//    static NSDictionary* delimToCommands = nil;
-//    if (!delimToCommands) {
-//        NSDictionary* delims = [self delimiters];
-//        NSMutableDictionary* mutableDict = [NSMutableDictionary dictionaryWithCapacity:delims.count];
-//        for (NSString* command in delims) {
-//            NSString* delim = delims[command];
-//            NSString* existingCommand = mutableDict[delim];
-//            if (existingCommand) {
-//                if (command.length > existingCommand.length) {
-//                    // Keep the shorter command
-//                    continue;
-//                } else if (command.length == existingCommand.length) {
-//                    // If the length is the same, keep the alphabetically first
-//                    if ([command compare:existingCommand] == NSOrderedDescending) {
-//                        continue;
-//                    }
-//                }
-//            }
-//            // In other cases replace the command.
-//            mutableDict[delim] = command;
-//        }
-//        delimToCommands = [mutableDict copy];
-//    }
-//    return delimToCommands;
-//}
-//
++(NSDictionary<NSString*, NSString*> *) delimiters
+{
+    static NSDictionary* delims = nil;
+    if (!delims) {
+        delims = @{
+                   @"." : @"", // . means no delimiter
+                   @"(" : @"(",
+                   @")" : @")",
+                   @"[" : @"[",
+                   @"]" : @"]",
+                   @"<" : @"\u2329",
+                   @">" : @"\u232A",
+                   @"/" : @"/",
+                   @"\\" : @"\\",
+                   @"|" : @"|",
+                   @"lgroup" : @"\u27EE",
+                   @"rgroup" : @"\u27EF",
+                   @"||" : @"\u2016",
+                   @"Vert" : @"\u2016",
+                   @"vert" : @"|",
+                   @"uparrow" : @"\u2191",
+                   @"downarrow" : @"\u2193",
+                   @"updownarrow" : @"\u2195",
+                   @"Uparrow" : @"21D1",
+                   @"Downarrow" : @"21D3",
+                   @"Updownarrow" : @"21D5",
+                   @"backslash" : @"\\",
+                   @"rangle" : @"\u232A",
+                   @"langle" : @"\u2329",
+                   @"rbrace" : @"}",
+                   @"}" : @"}",
+                   @"{" : @"{",
+                   @"lbrace" : @"{",
+                   @"lceil" : @"\u2308",
+                   @"rceil" : @"\u2309",
+                   @"lfloor" : @"\u230A",
+                   @"rfloor" : @"\u230B",
+                   };
+    }
+    return delims;
+}
+
++ (NSDictionary*) textToCommands
+{
+    static NSDictionary* textToCommands = nil;
+    if (!textToCommands) {
+        NSDictionary* commands = [self supportedCommands];
+        NSMutableDictionary* mutableDict = [NSMutableDictionary dictionaryWithCapacity:commands.count];
+        for (NSString* command in commands) {
+            MTMathAtom* atom = commands[command];
+            mutableDict[atom.nucleus] = command;
+        }
+        textToCommands = [mutableDict copy];
+    }
+    return textToCommands;
+}
+
++ (NSDictionary*) delimToCommand
+{
+    static NSDictionary* delimToCommands = nil;
+    if (!delimToCommands) {
+        NSDictionary* delims = [self delimiters];
+        NSMutableDictionary* mutableDict = [NSMutableDictionary dictionaryWithCapacity:delims.count];
+        for (NSString* command in delims) {
+            NSString* delim = delims[command];
+            NSString* existingCommand = mutableDict[delim];
+            if (existingCommand) {
+                if (command.length > existingCommand.length) {
+                    // Keep the shorter command
+                    continue;
+                } else if (command.length == existingCommand.length) {
+                    // If the length is the same, keep the alphabetically first
+                    if ([command compare:existingCommand] == NSOrderedDescending) {
+                        continue;
+                    }
+                }
+            }
+            // In other cases replace the command.
+            mutableDict[delim] = command;
+        }
+        delimToCommands = [mutableDict copy];
+    }
+    return delimToCommands;
+}
+
 + (MTMathList *)buildFromString:(NSString *)str
 {
     MTAsciiMathListBuilder* builder = [[MTAsciiMathListBuilder alloc] initWithString:str];
@@ -975,25 +975,111 @@
     return output;
 }
 
-//+ (NSString*) delimToString:(NSString*) delim
-//{
-//    NSString* command = self.delimToCommand[delim];
-//    if (command) {
-//        NSArray<NSString*>* singleChars = @[ @"(", @")", @"[", @"]", @"<", @">", @"|", @".", @"/"];
-//        if ([singleChars containsObject:command]) {
-//            return command;
-//        } else if ([command isEqualToString:@"||"]) {
-//            return @"\\|"; // special case for ||
-//        } else {
-//            return [NSString stringWithFormat:@"\\%@", command];
-//        }
-//    }
-//    return @"";
-//}
-//
-+ (NSString *)mathListToString:(MTMathList *)ml
++ (NSString*) delimToString:(NSString*) delim
 {
+    NSString* command = self.delimToCommand[delim];
+    if (command) {
+        NSArray<NSString*>* singleChars = @[ @"(", @")", @"[", @"]", @"<", @">", @"|", @".", @"/"];
+        if ([singleChars containsObject:command]) {
+            return command;
+        } else if ([command isEqualToString:@"||"]) {
+            return @"\\|"; // special case for ||
+        } else {
+            return [NSString stringWithFormat:@"\\%@", command];
+        }
+    }
     return @"";
 }
 
+// Converts MathList created from Latex string to AsciiMath
+
++ (NSString *)mathListToString:(MTMathList *)ml
+{
+    NSDictionary* textToCommands = [MTAsciiMathListBuilder textToCommands];
+    NSMutableString* str = [NSMutableString string];
+    
+    for (MTMathAtom* atom in ml.atoms) {
+        
+        NSString* command = textToCommands[atom.nucleus];
+        
+//        if (command) {
+//            [str appendFormat:@"%@ ", command];
+//        } else
+        if (atom.type == kMTMathAtomFraction) {
+            MTFraction* frac = (MTFraction*) atom;
+            if (frac.hasRule) {
+                [str appendFormat:@"%@/%@", [self mathListToString:frac.numerator], [self mathListToString:frac.denominator]];
+            } else {
+                NSString* command = nil;
+                if (!frac.leftDelimiter && !frac.rightDelimiter) {
+                    command = @"atop";
+                } else if ([frac.leftDelimiter isEqualToString:@"("] && [frac.rightDelimiter isEqualToString:@")"]) {
+                    command = @"choose";
+                } else if ([frac.leftDelimiter isEqualToString:@"{"] && [frac.rightDelimiter isEqualToString:@"}"]) {
+                    command = @"brace";
+                } else if ([frac.leftDelimiter isEqualToString:@"["] && [frac.rightDelimiter isEqualToString:@"]"]) {
+                    command = @"brack";
+                } else {
+                    command = [NSString stringWithFormat:@"atopwithdelims%@%@", frac.leftDelimiter, frac.rightDelimiter];
+                }
+                [str appendFormat:@"{%@ \\%@ %@}", [self mathListToString:frac.numerator], command, [self mathListToString:frac.denominator]];
+            }
+        } else if (atom.type == kMTMathAtomRadical) {
+            
+            MTRadical* rad = (MTRadical*) atom;
+            if (rad.degree) {
+                [str appendString:@"root"];
+                [str appendFormat:@"(%@)", [self mathListToString:rad.degree]];
+            } else {
+                [str appendString:@"sqrt"];
+            }
+            [str appendFormat:@"(%@)", [self mathListToString:rad.radicand]];
+        } else if (atom.type == kMTMathAtomInner) {
+            MTInner* inner = (MTInner*) atom;
+            if (inner.leftBoundary || inner.rightBoundary) {
+                if (inner.leftBoundary) {
+                    [str appendFormat:@"\\left%@ ", [self delimToString:inner.leftBoundary.nucleus]];
+                } else {
+                    [str appendString:@"\\left. "];
+                }
+                [str appendString:[self mathListToString:inner.innerList]];
+                if (inner.rightBoundary) {
+                    [str appendFormat:@"\\right%@ ", [self delimToString:inner.rightBoundary.nucleus]];
+                } else {
+                    [str appendString:@"\\right. "];
+                }
+            } else {
+                [str appendFormat:@"{%@}", [self mathListToString:inner.innerList]];
+            }
+        } else if (atom.nucleus.length == 0) {
+            [str appendString:@"{}"];
+        } else if ([atom.nucleus isEqualToString:@"\u2236"]) {
+            // math colon
+            [str appendString:@":"];
+        } else if ([atom.nucleus isEqualToString:@"\u2212"]) {
+            // math minus
+            [str appendString:@"-"];
+        } else if ([atom.nucleus isEqualToString:@"\u00d7"]) {
+            // math multiplier
+            [str appendString:@"*"];
+        } else if ([atom.nucleus isEqualToString:@"\u00F7"]) {
+            // math divider
+            [str appendString:@":"];
+        } else if ([atom.nucleus isEqualToString:@"\u220F"]) {
+            [str appendString:@"prod"];
+        } else {
+            [str appendString:atom.nucleus];
+        }
+        
+        if (atom.subScript) {
+            [str appendFormat:@"_(%@)", [self mathListToString:atom.subScript]];
+        }
+        
+        if (atom.superScript) {
+            [str appendFormat:@"^(%@)", [self mathListToString:atom.superScript]];
+        }
+
+    }
+    return [str copy];
+}
 @end

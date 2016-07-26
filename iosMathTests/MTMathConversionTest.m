@@ -119,7 +119,7 @@
     // \prod ^{b}_{a}
     
     // ∏^(b)_(a)
-    XCTAssertEqualObjects(latex, @"prod_a^b", @"%@", desc);
+    XCTAssertEqualObjects(latex, @"prod_(a)^(b)", @"%@", desc);
     
     
 }
