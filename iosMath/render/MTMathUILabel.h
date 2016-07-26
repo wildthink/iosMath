@@ -85,6 +85,9 @@ typedef NS_ENUM(unsigned int, MTTextAlignment) {
  @see error */
 @property (nonatomic, nullable) NSString* latex;
 
+/** The AsciiMath string to be displayed (http://asciimath.org/). Setting this will remove any `mathList` that
+ has been set.
+ @see error */
 @property (nonatomic, nullable) NSString* asciiMath;
 
 /** This contains any error that occurred when parsing the latex. */
