@@ -1005,19 +1005,14 @@
     return symbols;
 }
 
-// Dictionary that maps a latex non-command nucleus to an ascii math command
+// Dictionary that maps a latex non-command nucleus to an ascii math symbol
 
 + (NSDictionary<NSString*, NSString*> *) latexNucleusToAsciiMathCommands
 {
     static NSDictionary* symbols = nil;
     if (!symbols) {
         symbols = @{
-                    @"\u2211" : @"sum",
-                    @"\u220F" : @"prod",
-                    @"\u2236" : @":",
-                    @"\u2212" : @"-",
-                    @"\u00d7" : @"*",
-                    @"\u00F7" : @":"                    
+                    @"\u2212" : @"-"
                     };
     }
     return symbols;
@@ -1036,7 +1031,7 @@
         
         NSString* command = textToCommands[atom.nucleus];
         NSString* commandTranslation = commandTranslationsInAsciiMath[command];
-        if (commandTranslationsInAsciiMath) {
+        if (commandTranslation) {
             command = commandTranslation;
         }
         
