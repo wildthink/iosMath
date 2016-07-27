@@ -12,7 +12,7 @@
 #import "MTMathUILabel.h"
 #import "MTMathListDisplay.h"
 #import "MTFontManager.h"
-//#import "MTAsciiMathListBuilder.h"
+#import "MTAsciiMathListBuilder.h"
 #import "MTMathListBuilder.h"
 
 #import "MTTypesetter.h"
@@ -102,22 +102,22 @@
     [self setNeedsLayout];
 }
 
-//- (void)setAsciiMath:(NSString *)asciiMath {
-//    _asciiMath = asciiMath;
-//    _error = nil;
-//    NSError* error = nil;
-//    _mathList = [MTAsciiMathListBuilder buildFromString:asciiMath error:&error];
-//    if (error) {
-//        _mathList = nil;
-//        _error = error;
-//        NSLog(@"Error parsing latex: %@", error.localizedDescription);
-//        _errorLabel.text = error.localizedDescription;
-//        _errorLabel.frame = self.bounds;
-//        _errorLabel.hidden = !self.displayErrorInline;
-//        _errorLabel.textColor = [UIColor redColor];
-//    }
-//    [self setNeedsLayout];
-//}
+- (void)setAsciiMath:(NSString *)asciiMath {
+    _asciiMath = asciiMath;
+    _error = nil;
+    NSError* error = nil;
+    _mathList = [MTAsciiMathListBuilder buildFromString:asciiMath error:&error];
+    if (error) {
+        _mathList = nil;
+        _error = error;
+        NSLog(@"Error parsing latex: %@", error.localizedDescription);
+        _errorLabel.text = error.localizedDescription;
+        _errorLabel.frame = self.bounds;
+        _errorLabel.hidden = !self.displayErrorInline;
+        _errorLabel.textColor = [UIColor redColor];
+    }
+    [self setNeedsLayout];
+}
 
 - (void)setLabelMode:(MTMathUILabelMode)labelMode
 {

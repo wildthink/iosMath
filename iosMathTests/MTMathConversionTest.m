@@ -38,7 +38,7 @@
     MTMathList* list = [MTMathListBuilder buildFromString:str];
     NSString* desc = [NSString stringWithFormat:@"Error for string:%@", str];
     
-    // convert it back to latex
+    // Convert it back to Ascii Math
     NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
     XCTAssertEqualObjects(latex, @"sqrt(sqrt(2))", @"%@", desc);
 }
@@ -48,7 +48,7 @@
     NSString *str = @"\\sqrt[3]2";
     MTMathList* list = [MTMathListBuilder buildFromString:str];
     
-    // convert it back to latex
+    // Convert it back to Ascii Math
     NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
     XCTAssertEqualObjects(latex, @"root(3)(2)");
 }
@@ -59,7 +59,7 @@
     MTMathList* list = [MTMathListBuilder buildFromString:str];
     NSString* desc = [NSString stringWithFormat:@"Error for string:%@", str];
     
-    // convert it back to latex
+    // Convert it back to Ascii Math
     NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
     XCTAssertEqualObjects(latex, @"1/c", @"%@", desc);
 }
@@ -70,7 +70,7 @@
     MTMathList* list = [MTMathListBuilder buildFromString:str];
     NSString* desc = [NSString stringWithFormat:@"Error for string:%@", str];
     
-    // convert it back to latex
+    // Convert it back to Ascii Math
     NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
     XCTAssertEqualObjects(latex, @"5*3^(2:2)", @"%@", desc);
 }
@@ -81,7 +81,7 @@
     MTMathList* list = [MTMathListBuilder buildFromString:str];
     NSString* desc = [NSString stringWithFormat:@"Error for string:%@", str];
     
-    // convert it back to latex
+    // Convert it back to Ascii Math
     NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
     XCTAssertEqualObjects(latex, @"42.0x*5.0-((54+22.2)/2)", @"%@", desc);
 }
@@ -92,7 +92,7 @@
     MTMathList* list = [MTMathListBuilder buildFromString:str];
     NSString* desc = [NSString stringWithFormat:@"Error for string:%@", str];
     
-    // convert it back to latex
+    // Convert it back to Ascii Math
     NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
     XCTAssertEqualObjects(latex, @"a^((b+4)^(2))", @"%@", desc);
 }
@@ -103,7 +103,7 @@
     MTMathList* list = [MTMathListBuilder buildFromString:str];
     NSString* desc = [NSString stringWithFormat:@"Error for string:%@", str];
     
-    // convert it back to latex
+    // Convert it back to Ascii Math
     NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
     XCTAssertEqualObjects(latex, @"2_(x^(4))", @"%@", desc);
 }
@@ -114,16 +114,9 @@
     MTMathList* list = [MTMathListBuilder buildFromString:str];
     NSString* desc = [NSString stringWithFormat:@"Error for string:%@", str];
     
-    // convert it back to latex
+    // Convert it back to Ascii Math
     NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
-    // \prod ^{b}_{a}
-    
-    // ∏^(b)_(a)
     XCTAssertEqualObjects(latex, @"prod_(a)^(b)", @"%@", desc);
-    
-    
 }
-
-
 
 @end
