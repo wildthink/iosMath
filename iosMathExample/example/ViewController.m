@@ -223,7 +223,8 @@
     
     
     MTMathUILabel* testLabel = [[MTMathUILabel alloc] init];
-    testLabel.latex = @"5+\\sqrt{2}+3";
+    testLabel.latex = @"\\sqrt{\\frac{\\sqrt{\\frac{1}{2}} + 3}{\\sqrt5^x}}+\\sqrt{3x}+x^{\\sqrt2}";
+
     testLabel.textColor = [UIColor blackColor];
     testLabel.fontSize = 14;
     [testLabel sizeToFit];

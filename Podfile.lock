@@ -1,5 +1,5 @@
 PODS:
-  - iosMath (0.8.1)
+  - iosMath (0.8.2)
   - YYText (1.0.5)
 
 DEPENDENCIES:
@@ -11,7 +11,7 @@ EXTERNAL SOURCES:
     :path: ./
 
 SPEC CHECKSUMS:
-  iosMath: fa91d590ca38efe94d2883eac95ddfa224d019fb
+  iosMath: 1860211e90d41607415a746977a8e8597154ba4c
   YYText: ac09660c9ccd9b817f409a20caa6f5587444d2ae
 
 PODFILE CHECKSUM: d3feb953f99f77a2a1f0dffe94defbfe09e2624d
