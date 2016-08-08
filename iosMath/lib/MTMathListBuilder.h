@@ -75,6 +75,6 @@ typedef NS_ENUM(NSUInteger, MTParseErrors) {
     MTParseErrorMissingLeft,
 };
 
-+ (NSDictionary*) textToCommands;
++ (nonnull NSDictionary*) textToCommands;
 
 @end

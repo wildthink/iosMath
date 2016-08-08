@@ -102,6 +102,12 @@
     [self setNeedsLayout];
 }
 
+- (void)setTextColor:(UIColor *)textColor {
+    _textColor = textColor;
+    
+    [self setNeedsLayout];
+}
+
 //- (void)setAsciiMath:(NSString *)asciiMath {
 //    _asciiMath = asciiMath;
 //    _error = nil;

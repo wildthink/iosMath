@@ -999,7 +999,8 @@
     if (!symbols) {
         symbols = @{
                    @"times" : @"*",
-                   @"div" : @":"
+                   @"div" : @":",
+                   @"vert" : @"|"
                    };
     }
     return symbols;
@@ -1029,7 +1030,11 @@
     
     for (MTMathAtom* atom in ml.atoms) {
         
-        NSString* command = textToCommands[atom.nucleus];
+        NSString* command = nil;
+        if (atom.nucleus.length > 0) {
+            command = textToCommands[atom.nucleus];
+        }
+        
         NSString* commandTranslation = commandTranslationsInAsciiMath[command];
         if (commandTranslation) {
             command = commandTranslation;
@@ -1038,24 +1043,10 @@
         if (command) {
             [str appendFormat:@"%@", command];
         } else if (atom.type == kMTMathAtomFraction) {
+            
             MTFraction* frac = (MTFraction*) atom;
-            if (frac.hasRule) {
-                [str appendFormat:@"%@/%@", [self mathListToString:frac.numerator], [self mathListToString:frac.denominator]];
-            } else {
-                NSString* command = nil;
-                if (!frac.leftDelimiter && !frac.rightDelimiter) {
-                    command = @"atop";
-                } else if ([frac.leftDelimiter isEqualToString:@"("] && [frac.rightDelimiter isEqualToString:@")"]) {
-                    command = @"choose";
-                } else if ([frac.leftDelimiter isEqualToString:@"{"] && [frac.rightDelimiter isEqualToString:@"}"]) {
-                    command = @"brace";
-                } else if ([frac.leftDelimiter isEqualToString:@"["] && [frac.rightDelimiter isEqualToString:@"]"]) {
-                    command = @"brack";
-                } else {
-                    command = [NSString stringWithFormat:@"atopwithdelims%@%@", frac.leftDelimiter, frac.rightDelimiter];
-                }
-                [str appendFormat:@"{%@ \\%@ %@}", [self mathListToString:frac.numerator], command, [self mathListToString:frac.denominator]];
-            }
+            [str appendFormat:@"%@/%@", [self mathListToString:frac.numerator], [self mathListToString:frac.denominator]];
+            
         } else if (atom.type == kMTMathAtomRadical) {
             
             MTRadical* rad = (MTRadical*) atom;
