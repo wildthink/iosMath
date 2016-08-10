@@ -1045,7 +1045,7 @@
         } else if (atom.type == kMTMathAtomFraction) {
             
             MTFraction* frac = (MTFraction*) atom;
-            [str appendFormat:@"%@/%@", [self mathListToString:frac.numerator], [self mathListToString:frac.denominator]];
+            [str appendFormat:@"(%@)/(%@)", [self mathListToString:frac.numerator], [self mathListToString:frac.denominator]];
             
         } else if (atom.type == kMTMathAtomRadical) {
             
