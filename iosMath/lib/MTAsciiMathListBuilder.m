@@ -999,7 +999,7 @@
     if (!symbols) {
         symbols = @{
                    @"times" : @"*",
-                   @"div" : @":",
+                   @"div" : @"-:",
                    @"vert" : @"|"
                    };
     }
