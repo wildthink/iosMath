@@ -232,7 +232,6 @@
     MTMathUILabel* label = [[MTMathUILabel alloc] init];
     [self setHeight:height forView:label];
     label.latex = latex;
-    label.textColor = [UIColor blueColor];
     return label;
 }
 
@@ -331,6 +330,15 @@
     }
     for (MTMathUILabel* label in self.labels) {
         label.font = [[MTFontManager fontManager] xitsFontWithSize:label.font.fontSize];
+    }
+}
+- (IBAction)colorButtonPressed:(UIButton *)sender
+{
+    for (MTMathUILabel* label in self.demoLabels) {
+        label.textColor = sender.backgroundColor;
+    }
+    for (MTMathUILabel* label in self.labels) {
+        label.textColor = sender.backgroundColor;
     }
 }
 

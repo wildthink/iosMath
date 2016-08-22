@@ -55,11 +55,11 @@
     _displayList = nil;
     _displayErrorInline = true;
     self.backgroundColor = [UIColor clearColor];
+    _textColor = [UIColor blackColor];
     _errorLabel = [[UILabel alloc] init];
     _errorLabel.hidden = YES;
     _errorLabel.layer.geometryFlipped = YES;
     [self addSubview:_errorLabel];
-    _textColor = [UIColor blackColor];
 }
 
 - (void)setFont:(MTFont*)font
@@ -102,12 +102,6 @@
     [self setNeedsLayout];
 }
 
-- (void)setTextColor:(UIColor *)textColor {
-    _textColor = textColor;
-    
-    [self setNeedsLayout];
-}
-
 //- (void)setAsciiMath:(NSString *)asciiMath {
 //    _asciiMath = asciiMath;
 //    _error = nil;
@@ -129,6 +123,14 @@
 {
     _labelMode = labelMode;
     [self setNeedsLayout];
+}
+
+- (void)setTextColor:(UIColor *)textColor
+{
+    NSParameterAssert(textColor);
+    _textColor = textColor;
+    _displayList.textColor = textColor;
+    [self setNeedsDisplay];
 }
 
 - (void)setTextAlignment:(MTTextAlignment)textAlignment
@@ -159,9 +161,6 @@
     
     // Drawing code
     CGContextRef context = UIGraphicsGetCurrentContext();
-    // Some of the lines in the text are created through a stroke (like the horizontal line in square root symbol), so we need to set the stroke color as the text color
-    CGContextSetStrokeColorWithColor(context, _textColor.CGColor);
-    CGContextSetFillColorWithColor(context, _textColor.CGColor);
     CGContextSaveGState(context);
     
     [_displayList draw:context];
@@ -172,7 +171,8 @@
 - (void) layoutSubviews
 {
     if (_mathList) {
-        _displayList = [MTTypesetter createLineForMathList:_mathList font:_font style:self.currentStyle textColor:_textColor];
+        _displayList = [MTTypesetter createLineForMathList:_mathList font:_font style:self.currentStyle];
+        _displayList.textColor = _textColor;
         
         // Determine x position based on alignment
         CGFloat textX = 0;
@@ -208,7 +208,7 @@
 {
     MTMathListDisplay* displayList = nil;
     if (_mathList) {
-        displayList = [MTTypesetter createLineForMathList:_mathList font:_font style:self.currentStyle textColor:_textColor];
+        displayList = [MTTypesetter createLineForMathList:_mathList font:_font style:self.currentStyle];
     }
 
     size.width = displayList.width + _paddingLeft + _paddingRight;

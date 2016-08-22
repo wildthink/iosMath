@@ -102,6 +102,9 @@ typedef NS_ENUM(unsigned int, MTTextAlignment) {
 /** Convenience method to just set the size of the font without changing the fontface. */
 @property (nonatomic) CGFloat fontSize;
 
+/** This sets the text color of the rendered math formula. The default color is black. */
+@property (nonatomic, nonnull) UIColor* textColor;
+
 /** The Label mode for the label. The default mode is Display */
 @property (nonatomic) MTMathUILabelMode labelMode;
 
@@ -110,8 +113,5 @@ typedef NS_ENUM(unsigned int, MTTextAlignment) {
 
 /** The internal display of the MTMathUILabel. This is for advanced use only. */
 @property (nonatomic, readonly, nullable) MTMathListDisplay* displayList;
-
-/** The color used to render the text. */
-@property (nonatomic, nullable) UIColor *textColor;
 
 @end
