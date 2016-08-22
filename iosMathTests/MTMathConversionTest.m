@@ -61,7 +61,7 @@
     
     // Convert it back to Ascii Math
     NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
-    XCTAssertEqualObjects(latex, @"1/c", @"%@", desc);
+    XCTAssertEqualObjects(latex, @"(1)/(c)", @"%@", desc);
 }
 
 - (void) testSymbols
@@ -72,7 +72,7 @@
     
     // Convert it back to Ascii Math
     NSString* latex = [MTAsciiMathListBuilder mathListToString:list];
-    XCTAssertEqualObjects(latex, @"5*3^(2:2)", @"%@", desc);
+    XCTAssertEqualObjects(latex, @"5*3^(2-:2)", @"%@", desc);
 }
 
 - (void) testSymbolsTwo

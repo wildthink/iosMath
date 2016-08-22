@@ -103,7 +103,7 @@
     MTMathAtom* atom = list.atoms[0];
     XCTAssertEqualObjects(atom.stringValue, @"∑^{5+x}_{0}", "Atom string value");
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
 }
 
@@ -118,7 +118,7 @@
     
     XCTAssertEqualObjects(list.stringValue, @"\\sqrt{5}+x", "Atom string value");
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
 }
 
@@ -133,7 +133,7 @@
     
     XCTAssertEqualObjects(list.stringValue, @"\\sqrt{5.0}x+x", "Atom string value");
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
 }
 
@@ -148,7 +148,7 @@
     
     XCTAssertEqualObjects(list.stringValue, @"\\sqrt[5.0]{x}+x", "Atom string value");
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
 }
 
@@ -161,7 +161,7 @@
     MTMathList* finalized = list.finalized;
     XCTAssertEqualObjects(@(finalized.atoms.count), @3, @"Num atoms in finalized");
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
 }
 
@@ -174,7 +174,7 @@
     MTMathList* finalized = list.finalized;
     XCTAssertEqualObjects(@(finalized.atoms.count), @3, @"Num atoms in finalized");
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
 }
 
@@ -187,7 +187,7 @@
     MTMathList* finalized = list.finalized;
     XCTAssertEqualObjects(@(finalized.atoms.count), @4, @"Num atoms in finalized");
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
 }
 
@@ -201,7 +201,7 @@
     MTMathList* finalized = list.finalized;
     XCTAssertEqualObjects(@(finalized.atoms.count), @6, @"Num atoms in finalized");
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
 }
 
@@ -214,7 +214,7 @@
     MTMathList* finalized = list.finalized;
     XCTAssertEqualObjects(@(finalized.atoms.count), @1, @"Num atoms in finalized");
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
 }
 
@@ -227,9 +227,9 @@
     XCTAssertEqualObjects(@(finalized.atoms.count), @1, @"Num atoms in finalized");
     
     NSString *latexToParse = @"\\lim_{x\\to\\infty}";
-    MTMathList* latexList = [MTMathListBuilder buildFromString:latexToParse];
+    [MTMathListBuilder buildFromString:latexToParse];
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
 }
 
@@ -244,10 +244,10 @@
     MTMathList* finalized = list.finalized;
     XCTAssertEqualObjects(@(finalized.atoms.count), @4, @"Num atoms in finalized");
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     
-    MTMathListDisplay* latexDisplay = [MTTypesetter createLineForMathList:latexList.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    MTMathListDisplay* latexDisplay = [MTTypesetter createLineForMathList:latexList.finalized font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(latexDisplay);
 }
 
@@ -263,10 +263,10 @@
     MTMathList* finalized = list.finalized;
     XCTAssertEqualObjects(@(finalized.atoms.count), @2, @"Num atoms in finalized");
     
-    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list.finalized font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(display);
     
-    MTMathListDisplay* latexDisplay = [MTTypesetter createLineForMathList:latexList.finalized font:self.font style:kMTLineStyleDisplay textColor:[UIColor blackColor]];
+    MTMathListDisplay* latexDisplay = [MTTypesetter createLineForMathList:latexList.finalized font:self.font style:kMTLineStyleDisplay];
     XCTAssertNotNil(latexDisplay);
 }
 
