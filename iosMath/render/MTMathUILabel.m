@@ -204,6 +204,12 @@
     }
     
     if (_displayList) {
+        if (![_displayList.textColor isEqual:_textColor]) {
+            _displayList.textColor = _textColor;
+        }
+        if (![_displayList.placeholderColor isEqual:_placeholderColor]) {
+            _displayList.placeholderColor = _placeholderColor;
+        }
 //        _displayList.textColor = _textColor;
 //        _displayList.placeholderColor = _placeholderColor;
 //        for (int i = 0; i < _displayList.subDisplays.count; i++) {
