@@ -204,8 +204,8 @@
     }
     
     if (_displayList) {
-        _displayList.textColor = _textColor;
-        _displayList.placeholderColor = _placeholderColor;
+//        _displayList.textColor = _textColor;
+//        _displayList.placeholderColor = _placeholderColor;
 //        for (int i = 0; i < _displayList.subDisplays.count; i++) {
 //            MTDisplay *subDisplay = _displayList.subDisplays[0];
 //            subDisplay.position = CGPointMake(0.0, _displayList.descent * i);
