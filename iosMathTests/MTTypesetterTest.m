@@ -1515,10 +1515,4 @@
     XCTAssertEqualWithAccuracy(display.width, 44.86, 0.01);
 }
 
-- (void)testTextCommand {
-    MTMathList *mathLsit = [MTMathListBuilder buildFromString:@"x\\text{as}x"];
-    MTMathListDisplay* typesetter = [MTTypesetter createLineForMathList:mathLsit font:self.font textFont:self.textFont style:kMTLineStyleDisplay];
-}
-
-
 @end

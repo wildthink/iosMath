@@ -337,17 +337,14 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                 }
                 
                 MTMathColor *colorAtom = (MTMathColor*) atom;
+                
+                // We need to add some kind of space here, so we have to peek at the first atom of the inner list
                 NSArray* preprocessedAtoms = [MTTypesetter preprocessMathList:colorAtom.innerList.finalized];
-//                if (colorAtom.innerList.finalized != nil && colorAtom.innerList.finalized.atoms.count > 0) {
-//
-//                    [self addInterElementSpace:prevNode currentType:colorAtom.innerList.finalized.atoms[0].type];
-//                }
                 if (preprocessedAtoms.count > 0) {
                     [self addInterElementSpace:prevNode currentType:((MTMathAtom*)preprocessedAtoms[0]).type];
                  }
-////
+                
                 MTDisplay* display = [MTTypesetter createLineForMathList:colorAtom.innerList font:_font textFont:_textFont style:_style];
-//                colorAtom.innerList.fina
                 display.textColor = colorAtom.color;
                 display.position = _currentPosition;
                 display.canOverwriteTextColor = NO;
@@ -1460,6 +1457,7 @@ static const NSInteger kDelimiterShortfallPoints = 5;
 
 #pragma mark - Table
 
+// I lowered the following values by a lot to account for multiline text which looked too spaced with the previous figures. It may look terrible with tables or other aligned latex. - Kuba 12/09/16
 static const CGFloat kBaseLineSkipMultiplier = 0.1;  // default base line stretch is 1 pt for 10pt font.
 static const CGFloat kLineSkipMultiplier = 0.1;  // default is 1pt for 10pt font.
 static const CGFloat kLineSkipLimitMultiplier = 0;
