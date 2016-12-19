@@ -469,6 +469,7 @@ static BOOL isIos6Supported() {
     [super setTextColor:textColor];
     self.radicand.textColor = self.textColor;
     self.degree.textColor = self.textColor;
+    _radicalGlyph.textColor = self.textColor;
 }
 
 - (void) setPlaceholderColor:(UIColor *)placeholderColor
