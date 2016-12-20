@@ -101,6 +101,7 @@
 {
     _mathList = mathList;
     _error = nil;
+    _exception = nil;
     _latex = [MTMathListBuilder mathListToString:mathList];
     _displayList = [MTTypesetter createLineForMathList:_mathList font:_font textFont:_textFont style:self.currentStyle];
     [self invalidateIntrinsicContentSize];
@@ -113,6 +114,7 @@
     _mathList = nil;
     _latex = nil;
     _error = nil;
+    _exception = nil;
     [self invalidateIntrinsicContentSize];
     [self setNeedsLayout];
 }
@@ -121,6 +123,7 @@
 {
     _latex = latex;
     _error = nil;
+    _exception = nil;
     NSError* error = nil;
     _mathList = [MTMathListBuilder buildFromString:latex error:&error];
     if (error) {
@@ -136,6 +139,20 @@
     }
     [self invalidateIntrinsicContentSize];
     [self setNeedsLayout];
+}
+
+- (void)trySetLatex:(NSString *)string
+{
+    @try {
+        self.latex = string;
+    } @catch (NSException *exception) {
+        _exception = exception;
+        _errorLabel.text = @"Error parsing latex.";
+        _errorLabel.frame = self.bounds;
+        _errorLabel.hidden = !self.displayErrorInline;
+    } @finally {
+        //
+    }
 }
 
 - (void)setLabelMode:(MTMathUILabelMode)labelMode

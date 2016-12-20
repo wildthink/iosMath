@@ -74,6 +74,9 @@ IB_DESIGNABLE @interface MTMathUILabel : UIView
 /** This contains any error that occurred when parsing the latex. */
 @property (nonatomic, readonly, nullable) NSError* error;
 
+/** This contains any error that occurred when parsing the latex. */
+@property (nonatomic, readonly, nullable) NSException* exception;
+
 /** If true, if there is an error it displays the error message inline. Default true. */
 @property (nonatomic) BOOL displayErrorInline;
 
@@ -106,5 +109,7 @@ IB_DESIGNABLE @interface MTMathUILabel : UIView
 
 /** The internal display of the MTMathUILabel. This is for advanced use only. */
 @property (nonatomic, nullable) MTMathListDisplay* displayList;
+
+- (void) trySetLatex:(nonnull NSString*) string;
 
 @end
