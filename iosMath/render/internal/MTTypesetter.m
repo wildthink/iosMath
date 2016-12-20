@@ -336,12 +336,12 @@ static void getBboxDetails(CGRect bbox, CGFloat* ascent, CGFloat* descent)
                 }
                 
                 MTMathColor *colorAtom = (MTMathColor*) atom;
-//                
-//                // We need to add some kind of space here, so we have to peek at the first atom of the inner list
-//                NSArray* preprocessedAtoms = [MTTypesetter preprocessMathList:colorAtom.innerList.finalized];
-//                if (preprocessedAtoms.count > 0) {
-//                    [self addInterElementSpace:prevNode currentType:((MTMathAtom*)preprocessedAtoms[0]).type];
-//                 }
+                
+                // We need to add some kind of space here, so we have to peek at the first atom of the inner list
+                NSArray* preprocessedAtoms = [MTTypesetter preprocessMathList:colorAtom.innerList.finalized];
+                if (preprocessedAtoms.count > 0) {
+                    [self addInterElementSpace:prevNode currentType:((MTMathAtom*)preprocessedAtoms[0]).type];
+                 }
                 
                 MTDisplay* display = [MTTypesetter createLineForMathList:colorAtom.innerList font:_font textFont:_textFont style:_style];
                 display.textColor = colorAtom.color;
