@@ -146,6 +146,7 @@
     @try {
         self.latex = string;
     } @catch (NSException *exception) {
+        _mathList = nil;
         _exception = exception;
         _errorLabel.text = @"Error parsing latex.";
         _errorLabel.frame = self.bounds;
