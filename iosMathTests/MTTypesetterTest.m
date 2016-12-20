@@ -1517,7 +1517,7 @@
 
 - (void) testCrash
 {
-    NSString* str = @"3x+\\color{#FFE55F}{\\sqrt{2 \\cdot 2 \\cdot 3}}";
+    NSString* str = @"\\text{A root is a fraction exponent so } \\sqrt[2]{x} \\text{ is the same as } x^{1/2} \\text{. So a root around an exponent can cancel out: } \\left(x^{2}\\right)^{1/2} = x^{2/2} = x^{1/1} = x";
     NSError* error = nil;
     MTMathList* list = [MTMathListBuilder buildFromString:str error:&error];
     XCTAssertNotNil(list);

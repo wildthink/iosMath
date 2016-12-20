@@ -69,15 +69,14 @@ NSUInteger getInterElementSpaceArrayIndexForType(MTMathAtomType type, BOOL row) 
         case kMTMathAtomInner:
             return 7;
         case kMTMathAtomRadical: {
-            if (row) {
+//            if (row) {
                 // Radicals have inter element spaces only when on the left side.
                 // Note: This is a departure from latex but we don't want \sqrt{4}4 to look weird so we put a space in between.
                 // They have the same spacing as ordinary except with ordinary.
                 return 8;
-            } else {
-                NSCAssert(false, @"Interelement space undefined for radical on the right. Treat radical as ordinary.");
-                return -1;
-            }
+//            } else {
+//                return 8;
+//            }
         }
         case kMTMathAtomText: {
             if (row) {
