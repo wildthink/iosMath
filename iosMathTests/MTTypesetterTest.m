@@ -1515,4 +1515,17 @@
     XCTAssertEqualWithAccuracy(display.width, 44.86, 0.01);
 }
 
+- (void) testCrash
+{
+    NSString* str = @"3x+\\color{#FFE55F}{\\sqrt{2 \\cdot 2 \\cdot 3}}";
+    NSError* error = nil;
+    MTMathList* list = [MTMathListBuilder buildFromString:str error:&error];
+    XCTAssertNotNil(list);
+    XCTAssertNil(error);
+    
+    MTMathListDisplay* display = [MTTypesetter createLineForMathList:list font:self.font textFont:self.textFont style:kMTLineStyleDisplay];
+    XCTAssertNotNil(display);
+}
+
+
 @end
